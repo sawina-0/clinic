@@ -1482,7 +1482,7 @@ select{
 #allSpecialists .container .filters input{
     outline: none;
     border-radius: 15px;
-    padding: 15px 20px;
+    padding: 10px 15px;
     background-color: var(--gray);
     color: var(--brown);
     font-size: 20px;
@@ -1496,7 +1496,7 @@ select{
 #allServices .container .filters input{
     outline: none;
     border-radius: 15px;
-    padding: 15px 20px;
+    padding: 10px 15px;
     background-color: var(--gray);
     color: var(--brown);
     font-size: 20px;
@@ -2823,7 +2823,7 @@ select{
 #addDiagnose{
     display: none;
 }
-#editUsers>img{
+#editUsers .avatar-wrapper>img{
     position: static;
     width: 100px;
     height: 100px;
@@ -3101,7 +3101,7 @@ input[type="radio"]:checked{
     #edit-popup .popupContent{
         gap: 10px;
     }
-    #editUsers>img{
+    #editUsers .avatar-wrapper>img{
         width: 70px;
         height: 70px;
     }

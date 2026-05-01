@@ -7,6 +7,29 @@ if (!isLogged() || !isAdmin()) {
     exit;
 }
 
+// Удаление фото пользователя (админ)
+if (isset($_POST['delete_photo']) && $_POST['delete_photo'] == '1') {
+    $user_id = (int)($_POST['user_id'] ?? 0);
+    if (!$user_id) {
+        echo json_encode(['success' => false, 'message' => 'Нет ID пользователя']);
+        exit;
+    }
+    
+    $stmt = $pdo->prepare("SELECT photo FROM users WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $photo = $stmt->fetchColumn();
+    
+    if ($photo && $photo != 'none.svg' && file_exists("../img/avatars/" . $photo)) {
+        unlink("../img/avatars/" . $photo);
+    }
+    
+    $stmt = $pdo->prepare("UPDATE users SET photo = NULL WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    
+    echo json_encode(['success' => true]);
+    exit;
+}
+
 // ==================== ОБНОВЛЕНИЕ ТЕКСТОВЫХ ДАННЫХ ====================
 if ($_SERVER['CONTENT_TYPE'] === 'application/json') {
     $data = json_decode(file_get_contents('php://input'), true);

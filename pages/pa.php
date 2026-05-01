@@ -147,6 +147,7 @@
                 </div>
             </div>
             <input type="file" id="photoUpload" accept="image/*" style="display: none;">
+            <?if(!isAdmin() && !isStuff() && !isDoctor()): ?>
             <div class="scrolls">
                 <div class="appBlock scroll">
                     <h2>Ближайшие записи</h2>
@@ -205,6 +206,7 @@
                     </div>
                 </div>
             </div>
+            <?endif?>
         </div>
     </main>
     <div id="cancel-popup-overlay" class="popupOverlay" onclick="hidePopup('cancel-popup')">

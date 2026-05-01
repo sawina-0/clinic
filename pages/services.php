@@ -71,20 +71,27 @@
     <main id="allServices">
         <div class="container">
             <form class="filters" data-target="servicesList" data-url="../func/getFiltredServices.php">
-                <select name="direction" id="direction">
-                    <option value="">Все отделения</option>
-
-                    <?php
-                    $sql = "SELECT direction_id, name FROM directions ORDER BY name";
-                    $stmt = $pdo->query($sql);
-                    $directions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                    
-                    foreach($directions as $row) {
-                        $selected = (isset($_GET['direction']) && $_GET['direction'] == $row['direction_id']) ? 'selected' : '';
-                        echo "<option value='" . $row['direction_id'] . "' $selected>" . $row['name'] . "</option>";
-                    }
-                    ?>
-                </select>
+                <div class="custom-select-wrapper">
+                    <div class="custom-select-trigger">
+                        <span>Все отделения</span>
+                        <img src="../img/svg/selectArrow.svg" alt="">
+                    </div>
+                    <div class="custom-select-dropdown">
+                        <input type="text" class="search-input" placeholder="Поиск">
+                        <div class="options-container">
+                            <div class="filter-option" data-value="">Все отделения</div>
+                            <?php
+                            $sql = "SELECT direction_id, name FROM directions ORDER BY name";
+                            $stmt = $pdo->query($sql);
+                            $directions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            foreach ($directions as $row) {
+                                $selected = (isset($_GET['direction']) && $_GET['direction'] == $row['direction_id']) ? 'selected' : '';
+                                echo '<div class="filter-option" data-value="' . $row['direction_id'] . '">' . htmlspecialchars($row['name']) . '</div>';
+                            }
+                            ?>
+                        </div>
+                    </div>
+                </div>
                 <input type="text" name="search" id="search" placeholder="Поиск услуг" value="<?php echo isset($_GET['search']) ? htmlspecialchars($_GET['search']) : ''; ?>">
             </form>
             <p>*Запись на процедуры происходит через врача. Запись отобразится в личном кабинете, где при необходимости ее можно перенести или отменить</p>

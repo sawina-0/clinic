@@ -212,7 +212,10 @@
             <h2>Редактировать?</h2>
             <img src="../img/svg/cross.svg" alt="крестик - закрыть окно" onclick="hidePopup('edit-popup')">
             <div id="editUsers" class="popupContent">
-                <img src="../img/avatars/none.svg" alt="">
+                <div class="avatar-wrapper">
+                    <img src="../img/avatars/none.svg" alt="" id="editUserAvatar">
+                    <button type="button" id="deleteUserAvatarBtn" class="delete-avatar-btn" style="display: none;"><img src="../img/svg/trashRed.svg" alt="удалить аватарку"></button>
+                </div>
                 <div class="field">
                     <label for="surnameEdit">Фамилия:</label>
                     <input type="text" name="surnameEdit" id="surnameEdit" required>
