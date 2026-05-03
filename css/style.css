@@ -3129,3 +3129,67 @@ input[type="radio"]:checked{
         font-size: 16px;
     }
 }
+.error404{
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+.error404 .block{
+    position: fixed;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+}
+.error404 .block h1{
+    font-size: 300px;
+    background-image: url(../img/back.jpg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    /* color: var(--green); */
+    color: transparent;
+
+    background-clip: text;
+    -webkit-background-clip: text;
+}
+.error404 .block p{
+    font-size: 32px;
+    color: var(--cyan);
+    font-weight: 700;
+    text-align: center;
+}
+.error404 .block .commonBtn{
+    font-size: 24px;
+}
+@media screen and (max-width: 800px) {
+    .error404 .block{
+        gap: 30px;
+    }
+    .error404 .block h1{
+        font-size: 200px;
+    }
+    .error404 .block p{
+        font-size: 28px;
+    }
+    .error404 .block .commonBtn{
+        font-size: 20px;
+    }
+}
+@media screen and (max-width: 510px) {
+    .error404 .block{
+        gap: 15px;
+    }
+    .error404 .block h1{
+        font-size: 120px;
+    }
+    .error404 .block p{
+        font-size: 24px;
+    }
+    .error404 .block .commonBtn{
+        font-size: 18px;
+    }
+}
