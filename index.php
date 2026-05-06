@@ -84,7 +84,7 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="join">
                 <span>Выбирайте легкий путь к здоровью</span>
                 <div class="btns">
-                    <a href="" class="btn white">умная запись по симптомам</a>
+                    <a href="./pages/smartApp.php" class="btn white">умная запись по симптомам</a>
                     <a href="./pages/specialists.php" class="btn green">прямая запись к врачу</a>
                 </div>
             </div>

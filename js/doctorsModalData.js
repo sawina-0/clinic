@@ -1,17 +1,17 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     let selectedDoctor = {
         id: null,
         name: '',
         photo: ''
     };
-    
+
     let selectedService = {
         id: null,
         name: '',
         price: null
     };
     let doctorSchedule = [];
-    document.addEventListener('serviceSelected', function(e) {
+    document.addEventListener('serviceSelected', function (e) {
         if (e.detail.type === 'service') {
             selectedService.id = e.detail.id;
             selectedService.name = e.detail.name;
@@ -26,21 +26,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     doctorSchedule = data;
                 });
         }
-        
-        // Активируем кнопку "выбрать дату"
-        document.getElementById('madeAppService').disabled = false;
+        console.log('serviceSelected сработал, тип:', e.detail.type);
+console.log('madeAppBtn в DOM:', document.getElementById('madeAppService'));
+        const madeAppBtn = document.getElementById('madeAppService');
+        if (madeAppBtn) madeAppBtn.disabled = false;
     });
-    document.getElementById('stepDate').addEventListener('click', function(e) {
+    document.getElementById('stepDate').addEventListener('click', function (e) {
         const dataBlock = e.target.closest('.data');
         if (!dataBlock) return;
-        
+
         const stepService = document.getElementById('stepService');
         const stepDate = document.getElementById('stepDate');
-        
+
         // Показываем шаг выбора услуги
         stepService.style.display = 'flex';
         stepService.style.visibility = 'visible';
-        
+
         // Прячем шаг с датой
         stepDate.style.display = 'none';
         stepDate.style.visibility = 'hidden';
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Делегирование для кнопок "записаться"
     const doctorsList = document.getElementById('doctorsList');
     if (doctorsList) {
-        doctorsList.addEventListener('click', function(e) {
+        doctorsList.addEventListener('click', function (e) {
             const btn = e.target.closest('.commonBtn');
             if (!btn) return;
             const type = btn.dataset.type;
@@ -87,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     .then(response => response.json())
                     .then(data => doctorSchedule = data);
 
-            } 
+            }
             showPopup('app-popup');
         });
     }
@@ -95,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Делегирование для кнопок "записаться" на странице услуг
     const servicesList = document.getElementById('servicesList');
     if (servicesList) {
-        servicesList.addEventListener('click', function(e) {
+        servicesList.addEventListener('click', function (e) {
             const btn = e.target.closest('.commonBtn');
             if (!btn) return;
             const type = btn.dataset.type;
@@ -130,32 +131,32 @@ document.addEventListener('DOMContentLoaded', function() {
             showPopup('app-popup');
         });
     }
-    
+
     // Делегирование для выбора услуги
     const madeAppBtn = document.getElementById('madeAppService');
     if (madeAppBtn) {
         madeAppBtn.disabled = true;
-        
+
         // Вешаем обработчик на кнопку "выбрать дату"
-        madeAppBtn.addEventListener('click', function() {
+        madeAppBtn.addEventListener('click', function () {
             // Переход на шаг с датой
             const stepService = document.getElementById('stepService');
             const stepDate = document.getElementById('stepDate');
-            
+
             // Прячем шаг выбора услуги
             stepService.style.display = 'none';
             stepService.style.visibility = 'hidden';
-            
+
             // Показываем шаг с датой
             stepDate.style.display = 'flex';
             stepDate.style.visibility = 'visible';
-            
+
             // Заполняем данные в шапке stepDate
             const dateDataBlock = stepDate.querySelector('.data');
-            const photoHtml = selectedDoctor.photo 
+            const photoHtml = selectedDoctor.photo
                 ? `<img src="../img/avatars/${selectedDoctor.photo}" alt="">`
                 : '<img src="../img/avatars/none.svg" alt="">';
-            
+
             // Сохраняем локально
             const doctorName = selectedDoctor.name;
             const serviceName = selectedService.name;
@@ -176,32 +177,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 maxDate: new Date().fp_incr(60),
                 dateFormat: 'd.m.Y',
                 disable: [
-                    function(date) {
+                    function (date) {
                         // Получаем день недели (0 = вс, 1 = пн, ..., 6 = сб)
                         const day = date.getDay();
-                        
+
                         // Если у врача нет расписания или день не входит в его рабочие дни
                         if (!doctorSchedule || doctorSchedule.length === 0) return true;
-                        
+
                         // Возвращаем true, если день НЕ рабочий
                         return !doctorSchedule.includes(day);
                     }
                 ],
-                onChange: function(selectedDates, dateStr) {
+                onChange: function (selectedDates, dateStr) {
                     document.getElementById('madeAppDate').disabled = false;
                     selectedDate = dateStr;
                 }
             });
         });
     }
-    document.getElementById('madeAppDate').addEventListener('click', function() {
+    document.getElementById('madeAppDate').addEventListener('click', function () {
         document.getElementById('madeAppTime').disabled = true;
         // Переход на шаг 3
         document.getElementById('stepDate').style.display = 'none';
         document.getElementById('stepDate').style.visibility = 'hidden';
         document.getElementById('stepTime').style.display = 'flex';
         document.getElementById('stepTime').style.visibility = 'visible';
-        
+
         // Загружаем свободное время для выбранного врача и даты
         fetch(`../func/getFreeTime.php?doctor_id=${selectedDoctor.id}&date=${selectedDate}`)
             .then(response => response.text())
@@ -210,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
         const timeDataBlock = document.querySelector('#stepTime .data');
-        const photoHtml = selectedDoctor.photo 
+        const photoHtml = selectedDoctor.photo
             ? `<img src="../img/avatars/${selectedDoctor.photo}" alt="">`
             : '<img src="../img/avatars/none.svg" alt="">';
 
@@ -226,37 +227,37 @@ document.addEventListener('DOMContentLoaded', function() {
         const [day, month, year] = selectedDate.split('.');
         const dateObj = new Date(year, month - 1, day);
 
-        document.querySelector('.selected-date-display').textContent = 
+        document.querySelector('.selected-date-display').textContent =
             dateObj.toLocaleDateString('ru-RU', {
                 weekday: 'short',
                 day: 'numeric',
                 month: 'numeric',
                 year: 'numeric'
             });
-        document.querySelector('.time').addEventListener('click', function(e) {
+        document.querySelector('.time').addEventListener('click', function (e) {
             const slot = e.target.closest('.time-slot');
             if (!slot || slot.disabled) return;
-            
+
             // Убираем выделение с других
             document.querySelectorAll('.time-slot').forEach(s => {
                 s.classList.remove('selected');
             });
-            
+
             // Выделяем выбранное
             slot.classList.add('selected');
-            
+
             // Сохраняем выбранное время
             selectedTime = slot.dataset.time;
-            
+
             // Активируем кнопку записи
             document.getElementById('madeAppTime').disabled = false;
         });
 
     });
-    document.getElementById('madeAppTime').addEventListener('click', function() {
+    document.getElementById('madeAppTime').addEventListener('click', function () {
         fetch('../func/createAppointment.php', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 doctor_id: selectedDoctor.id,
                 service_id: selectedService.id,
@@ -264,23 +265,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 time: selectedTime
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Запись создана');
-                hidePopup('app-popup');
-            } else {
-                alert('Ошибка: ' + data.message);
-            }
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Запись создана');
+                    hidePopup('app-popup');
+                } else {
+                    alert('Ошибка: ' + data.message);
+                }
+            });
     });
-    document.querySelector('#stepTime .data').addEventListener('click', function() {
+    document.querySelector('#stepTime .data').addEventListener('click', function () {
         document.getElementById('stepTime').style.display = 'none';
         document.getElementById('stepTime').style.visibility = 'hidden';
         document.getElementById('stepService').style.display = 'flex';
         document.getElementById('stepService').style.visibility = 'visible';;
     });
-    document.querySelector('.time-header').addEventListener('click', function() {
+    document.querySelector('.time-header').addEventListener('click', function () {
         document.getElementById('stepTime').style.display = 'none';
         document.getElementById('stepTime').style.visibility = 'hidden';
         document.getElementById('stepDate').style.display = 'flex';

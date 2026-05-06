@@ -53,6 +53,9 @@ html{
 #hero{
     scroll-margin-top: 120px;
 }
+main{
+    flex-grow: 1;
+}
 a{
     text-decoration: none;
     display: flex;
@@ -203,6 +206,7 @@ header{
 }
 .mobileMenu.show {
     transform: translateX(0);
+    z-index: 100;
 }
 .mobileMenu nav {
     height: 100%;
@@ -1436,13 +1440,13 @@ input::placeholder{
 #allServices{
     padding-bottom: 50px;
     margin-top: 120px;
-    flex-grow: 1;
 }
 #allServices>img{
     position: fixed;
     left: 0;
     top: 80px;
     pointer-events: none;
+    z-index: -1;
 }
 #allServices .container{
     display: flex;
@@ -1696,7 +1700,6 @@ select{
 #allSpecialists{
     padding-bottom: 50px;
     margin-top: 120px;
-    flex-grow: 1;
 }
 #allSpecialists .container{
     display: flex;
@@ -2939,7 +2942,6 @@ input[type="radio"]:checked{
     background-color: var(--lightGreen);
 }
 #adminPanel{
-    flex-grow: 1;
     padding-bottom: 50px;
     margin-top: 120px;
 }
@@ -3190,6 +3192,88 @@ input[type="radio"]:checked{
         font-size: 24px;
     }
     .error404 .block .commonBtn{
+        font-size: 18px;
+    }
+}
+#smartAppPage{
+    padding-bottom: 50px;
+    margin-top: 120px;
+}
+#smartAppPage .container{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+#smartAppPage .container>p{
+    font-size: 16px;
+    color: var(--red);
+    font-weight: 700;
+}
+#smartAppPage .container textarea{
+    outline: none;
+    border-radius: 15px;
+    padding: 10px 15px;
+    background-color: var(--gray);
+    color: var(--brown);
+    font-size: 20px;
+    border: none;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    min-height: 50px;
+    max-height: 200px;
+}
+#smartAppPage .container textarea::placeholder{
+    color: #432E2580;
+}
+#smartAppPage .container .specialistsCard{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    width: 100%;
+    gap: 30px;
+}
+#smartAppPage .container .specialistsCard .doctorCard{
+    padding: 20px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--aboutWhite);
+    filter: drop-shadow(1px 4px 2px #56714840);
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-image: 
+        linear-gradient(var(--aboutWhite), var(--aboutWhite)), 
+        linear-gradient(45deg, transparent 0%, var(--green) 50%, transparent 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+}
+#smartAppPage .container .specialistsCard .doctorCard img{
+    width: 130px;
+    height: 130px;
+    pointer-events: none;
+    border-radius: 10px;
+}
+#smartAppPage .container .specialistsCard .doctorCard p{
+    text-align: center;
+}
+@media screen and (max-width: 740px) {
+    #smartAppPage{
+        margin-top: 100px;
+    }
+    #smartAppPage .container{
+        gap: 15px;
+    }
+}
+@media screen and (max-width: 420px) {
+    #smartAppPage .container>p{
+        font-size: 14px;
+    }
+    #smartAppPage .container textarea{
+        font-size: 18px;
+    }
+    #smartAppPage .container textarea::placeholder{
         font-size: 18px;
     }
 }
