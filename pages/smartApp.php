@@ -1,14 +1,57 @@
 <?php
     session_start();
     require_once '../config.php';
+    require_once '../func/smartAnalysis.php';
+    
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+    header('Content-Type: application/json');
+    
+    $symptoms = isset($_POST['symptoms']) ? trim($_POST['symptoms']) : '';
+    
+    if (empty($symptoms)) {
+        echo json_encode(['error' => 'Введите симптомы']);
+        exit;
+    }
+    
+    // Анализируем симптомы
+    $direction_id = analyzeSymptoms($symptoms, $pdo);
+    
+    // Получаем направление по умолчанию (терапия), если не нашли
+    if (!$direction_id) {
+        $direction_id = 1;
+    }
+    
+    // Получаем врачей этого направления
+    $doctors = getDoctorsByDirection($direction_id, $pdo);
+    
+    // Получаем название направления
+    $stmt = $pdo->prepare("SELECT name, specialist_name FROM directions WHERE direction_id = ?");
+    $stmt->execute([$direction_id]);
+    $direction = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    echo json_encode([
+        'success' => true,
+        'direction_id' => $direction_id,
+        'direction_name' => $direction['name'],
+        'specialist_name' => $direction['specialist_name'],
+        'doctors' => $doctors
+    ]);
+    exit;
+}
 ?>
+<script>
+    window.isLogged = <?= isLogged() ? 'true' : 'false' ?>;
+    window.isPatient = <?= (!isAdmin() && !isDoctor() && !isStuff()) ? 'true' : 'false' ?>;
+</script>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../js/toggle.js" defer></script>
+    <script src="../js/smartApp.js" defer></script>
     <script src="../js/hat.js" defer></script>
+    <script src="../js/smartAppModal.js" defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
@@ -62,9 +105,10 @@
         <div class="container">
             <p>*Сервис предназначен для предварительного подбора специалиста. Не является системой медицинской диагностики. Окончательный диагноз устанавливает врач на очном приеме. При острых состояниях немедленно вызывайте скорую.</p>
             <textarea name="sympSearch" id="sympSearch" placeholder="Опишите свои симптомы"></textarea>
-            <button class="commonBtn">Определить специалиста</button>
+            <button class="commonBtn" id="define">Определить специалиста</button>
+            <div id="recommendTitleContainer"></div>
             <div class="specialistsCard">
-                <div class="doctorCard">
+                <!-- <div class="doctorCard">
                     <img src="../img/avatars/man1.jpeg" alt="">
                     <p>Иванов Иван Иванович</p>
                     <p>Терапевт</p>
@@ -77,7 +121,7 @@
                     <p>Терапевт</p>
                     <p>Стаж: 20 лет</p>
                     <button class="commonBtn">Записаться</button>
-                </div>
+                </div> -->
             </div>
         </div>
     </main>
