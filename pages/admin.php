@@ -55,6 +55,7 @@
                 <ul>
                     <li><button class="tabBtn selected" data-section="appointments">записи</button></li>
                     <li><button class="tabBtn" data-section="diagnose">диагнозы</button></li>
+                    <li><button class="tabBtn" data-section="symptomes">симптомы</button></li>
                 </ul>
             </nav>
             <?elseif(isStuff()): ?>
@@ -476,6 +477,16 @@
                     <input type="text" name="diagnoseEdit" id="diagnoseEdit" required>
                 </div>
             </div>
+            <div id="editSymp" class="popupContent">
+                <div class="field">
+                    <label for="sympEdit">Ключевое слово/фраза:</label>
+                    <input type="text" name="sympEdit" id="sympEdit" required>
+                </div>
+                <div class="field">
+                    <label for="priorityEdit">Приоритет:</label>
+                    <input type="num" name="priorityEdit" id="priorityEdit" required>
+                </div>
+            </div>
             <button id="editBtn" class="edit">сохранить</button>
         </div>
     </div>
@@ -732,6 +743,16 @@
                 <div class="field">
                     <label for="diagnoseAdd">Диагноз:</label>
                     <input type="text" name="diagnoseAdd" id="diagnoseAdd" required>
+                </div>
+            </div>
+            <div id="addSymp" class="popupContent">
+                <div class="field">
+                    <label for="sympAdd">Ключевое слово/фраза:</label>
+                    <input type="text" name="sympAdd" id="sympAdd" required>
+                </div>
+                <div class="field">
+                    <label for="priorityAdd">Приоритет:</label>
+                    <input type="num" name="priorityAdd" id="priorityAdd" required>
                 </div>
             </div>
             <button id="addBtn" class="add">добавить</button>

@@ -44,6 +44,14 @@ if ($type === 'user') {
     $stmt = $pdo->prepare("SELECT diagnose_id, user_id, doctor_id, date, diagnose_text FROM diagnose WHERE diagnose_id = ?");
     $stmt->execute([$id]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
+} elseif ($type === 'symptom') {
+    $stmt = $pdo->prepare("
+        SELECT id, keyword, priority 
+        FROM symptoms 
+        WHERE id = ?
+    ");
+    $stmt->execute([$id]);
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 echo json_encode($data);

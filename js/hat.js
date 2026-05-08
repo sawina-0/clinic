@@ -1,9 +1,10 @@
 const hat = document.querySelector('.hat'); 
 const burger = document.querySelector('.burger');
+
 window.addEventListener('scroll', function() {
-    if (!document.querySelector('.mobileMenu').classList.contains('show')) {
-        hat.classList.toggle('scrolled', window.scrollY > 20);
-        burger.classList.toggle('scrolled', window.scrollY > 20);
+    if (!document.querySelector('.mobileMenu')?.classList.contains('show')) {
+        if (hat) hat.classList.toggle('scrolled', window.scrollY > 20);
+        if (burger) burger.classList.toggle('scrolled', window.scrollY > 20);
     }
 });
 

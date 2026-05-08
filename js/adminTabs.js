@@ -86,6 +86,8 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
         } else if (section === 'diagnose') {
             filterHtml = '';
+        } else if (section === 'symptomes') {
+            filterHtml = '';
         } else {
             filterHtml = `
                 <div class="custom-select-wrapper">
@@ -412,6 +414,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                     });
             }
+        } else if (currentSection === 'symptomes') {
+            document.getElementById('addSymp').style.display = 'flex';
+
+            // Очищаем поля
+            document.getElementById('sympAdd').value = '';
+            document.getElementById('priorityAdd').value = '';
         }
     });
     document.addEventListener('click', function (e) {
@@ -612,6 +620,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (result.success) {
                 alert('Диагноз добавлен');
+                hidePopup('add-popup');
+                loadSection(currentSection);
+            } else {
+                alert(result.message);
+            }
+        }//сохранение симптома 
+        else if (currentSection === 'symptomes') {
+            const keyword = document.getElementById('sympAdd').value;
+            const priority = document.getElementById('priorityAdd').value;
+
+            if (!keyword || !priority) {
+                alert('Заполните все поля');
+                return;
+            }
+
+            // Получаем direction_id текущего врача
+            const dirResponse = await fetch('../func/getDoctorDirection.php');
+            const dirData = await dirResponse.json();
+            const direction_id = dirData.direction_id;
+
+            if (!direction_id) {
+                alert('Ошибка: не удалось определить направление врача');
+                return;
+            }
+
+            const response = await fetch('../crud/addSymptom.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ keyword, priority, direction_id })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Симптом добавлен');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
@@ -1089,6 +1131,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             return;
         }
+
+        //8. Симптомы
+        const symptomEdit = e.target.closest('.symptomCard .editBtn');
+        if (symptomEdit) {
+            e.preventDefault();
+
+            document.querySelectorAll('#edit-popup .popupContent').forEach(block => {
+                block.style.display = 'none';
+            });
+            document.getElementById('editSymp').style.display = 'flex';
+
+            const card = symptomEdit.closest('.symptomCard');
+            const symptomId = card.dataset.id;
+
+            fetch(`../crud/getItem.php?type=symptom&id=${symptomId}`)
+                .then(response => response.json())
+                .then(symptom => {
+                    if (!symptom.id) {
+                        alert('Ошибка загрузки данных');
+                        return;
+                    }
+
+                    document.getElementById('sympEdit').value = symptom.keyword;
+                    document.getElementById('priorityEdit').value = symptom.priority;
+
+                    document.querySelector('#edit-popup').dataset.symptomId = symptomId;
+                    showPopup('edit-popup');
+                });
+            return;
+        }
     });
     //сохранение редакта
     document.getElementById('editBtn').addEventListener('click', async function () {
@@ -1363,6 +1435,32 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 alert(result.message);
             }
+        } else if (currentSection === 'symptomes') {
+            const symptomId = document.querySelector('#edit-popup').dataset.symptomId;
+            if (!symptomId) return;
+
+            const keyword = document.getElementById('sympEdit').value;
+            const priority = document.getElementById('priorityEdit').value;
+
+            if (!keyword || !priority) {
+                alert('Заполните все поля');
+                return;
+            }
+
+            const response = await fetch('../crud/updateSymptom.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ symptom_id: symptomId, keyword, priority })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                alert('Симптом обновлён');
+                hidePopup('edit-popup');
+                loadSection(currentSection);
+            } else {
+                alert(result.message);
+            }
         }
     });
     //редакт для фотки
@@ -1458,6 +1556,9 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (deleteBtn.closest('.diagnoseCard')) {
             type = 'diagnose';
             id = deleteBtn.closest('.diagnoseCard').dataset.id;
+        } else if (deleteBtn.closest('.symptomCard')) {
+            type = 'symptom';
+            id = deleteBtn.closest('.symptomCard').dataset.id;
         }
 
         if (!type || !id) return;

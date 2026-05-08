@@ -106,6 +106,9 @@ try {
     } elseif ($type === 'diagnose') {
         $stmt = $pdo->prepare("DELETE FROM diagnose WHERE diagnose_id = ?");
         $stmt->execute([$id]);
+    } elseif ($type === 'symptom') {
+        $stmt = $pdo->prepare("DELETE FROM symptoms WHERE id = ?");
+        $stmt->execute([$id]);
     }
     
     echo json_encode(['success' => true]);
