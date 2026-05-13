@@ -12,13 +12,13 @@ window.addEventListener('scroll', function() {
 function showPopup(id){
     const popupOverlay = document.getElementById(`${id}-overlay`);
     const popupContainer = document.getElementById(id);
+    
     popupOverlay.classList.add('show');
     popupContainer.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
 
 function hidePopup(id){
-    
     const popupOverlay = document.getElementById(`${id}-overlay`);
     const popupContainer = document.getElementById(id);
     

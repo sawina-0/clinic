@@ -1820,6 +1820,7 @@ select{
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
 }
 .popupContainer{
     position: fixed;
@@ -1844,6 +1845,7 @@ select{
 .popupOverlay.show, .popupContainer.show{
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
 }
 .popupContent{
     background-color: var(--aboutWhite);
