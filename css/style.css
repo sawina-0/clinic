@@ -1093,11 +1093,15 @@ header{
     position: absolute;
     top: 0;
     right: 0;
+    z-index: 0;
+    pointer-events: none;
 }
 #contacts .container>img:nth-child(4){
     position: absolute;
     right: 0;
     bottom: 0;
+    z-index: 0;
+    pointer-events: none;
 }
 #contacts .container .content{
     display: flex;
@@ -1417,10 +1421,21 @@ input::placeholder{
         font-size: 14px;
     }
 }
+@media screen and (max-height: 900px) {
+    .action .logoAbs{
+        font-size: 18px;
+        top: 10px;
+        left: 10px;
+    }
+    .action .block{
+        gap: 10px;
+        padding: 10px 20px;
+    }
+}
 @media screen and (max-width: 530px) {
     .action .block{
         width: 300px;
-        padding: 20px;
+        padding: 10px 20px;
     }
     .action .block .inputs .field{
         gap: 5px;
@@ -3291,5 +3306,71 @@ input[type="radio"]:checked{
     }
     #smartAppPage .container textarea::placeholder{
         font-size: 18px;
+    }
+}
+#privacy{
+    padding-bottom: 50px;
+    margin-top: 120px;
+}
+#privacy .container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+#privacy .container h1{
+    color: var(--green);
+    font-size: 24px;
+    text-align: center;
+}
+#privacy .container p{
+    width: 100%;
+    font-size: 20px;
+    color: var(--brown);
+    text-align: justify;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+#law{
+    padding-bottom: 50px;
+    margin-top: 120px;
+}
+#law .container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+#law .container h1{
+    color: var(--green);
+    font-size: 24px;
+}
+#law .container p{
+    width: 100%;
+    font-size: 20px;
+    color: var(--brown);
+    text-align: justify;
+}
+@media screen and (max-width: 780px) {
+    #law{
+        margin-top: 100px;
+    }
+    #privacy{
+        margin-top: 100px;
+    }
+}
+@media screen and (max-width: 480px) {
+    #law .container h1{
+        font-size: 20px;
+    }
+    #law .container p{
+        font-size: 16px;
+    }
+    #privacy .container h1{
+        font-size: 18px;
+    }
+    #privacy .container p{
+        font-size: 16px;
+        max-width: fit-content;
     }
 }
