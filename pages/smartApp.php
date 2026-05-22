@@ -42,6 +42,7 @@
 <script>
     window.isLogged = <?= isLogged() ? 'true' : 'false' ?>;
     window.isPatient = <?= (!isAdmin() && !isDoctor() && !isStuff()) ? 'true' : 'false' ?>;
+    window.isBlocked = <?php echo isBlocked() ? 'true' : 'false'; ?>;
 </script>
 <!DOCTYPE html>
 <html lang="ru">
@@ -53,6 +54,7 @@
     <script src="../js/smartApp.js" defer></script>
     <script src="../js/hat.js" defer></script>
     <script src="../js/smartAppModal.js" defer></script>
+    <script src="../js/alert.js" defer></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
@@ -194,5 +196,6 @@
             </div>
         </div>
     </div>
+    <?php include '../component/alert.php'; ?>
 </body>
 </html>

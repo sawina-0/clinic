@@ -1,7 +1,7 @@
 <?php
     session_start();
     require_once '../config.php';
-    if(isLogged()){
+    if(isLogged() || isBlocked()){
         header('Location: ../index.php');
         exit;
     }
@@ -24,13 +24,15 @@
             // $response['debug_user_found'] = $user ? 'да' : 'нет';
 
             if($user && password_verify($password, $user['password'])){
-                $_SESSION['user_id'] = $user['user_id'];
-                $_SESSION['role'] = $user['role'];
-
-
-                $response['success'] = true;
-                $response['message'] = 'Вход выполнен';
-                $response['redirect'] = '../index.php';
+                if($user['role'] === 'Заблокирован'){
+                    $response['message'] = 'Ваш аккаунт заблокирован. Обратитесь к администратору.';
+                } else {
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['role'] = $user['role'];
+                    $response['success'] = true;
+                    $response['message'] = 'Вход выполнен';
+                    $response['redirect'] = '../index.php';
+                }
                 // header('Location: ../index.php'); //SENT TO A PAGE AFTER ENTER
                 // exit;
             }
@@ -50,6 +52,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no">
     <script src="../js/maskAndError.js" defer></script>
+    <script src="../js/alert.js" defer></script>
     <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../css/style.css">
     <title>Клиника Кедр - Вход</title>
@@ -80,5 +83,6 @@
             
         </form>
     </main>
+    <?php include '../component/alert.php'; ?>
 </body>
 </html>

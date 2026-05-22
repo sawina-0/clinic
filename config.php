@@ -19,6 +19,9 @@
     function isStuff(){
         return isset($_SESSION['role']) && $_SESSION['role'] == 'Персонал';
     }
+    function isBlocked(){
+        return isset($_SESSION['role']) && $_SESSION['role'] == 'Заблокирован';
+    }
     function updateSessionData(){
         global $pdo;
         if(isLogged()){

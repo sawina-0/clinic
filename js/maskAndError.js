@@ -48,13 +48,13 @@ async function submitForm(form, url) {
         const result = await response.json();
         
         if (result.success) {
-            alert(result.message);
+            // customAlert(result.message);
             if (result.redirect) window.location.href = result.redirect;
         } else {
-            alert(result.message);
+            customAlert(result.message);
         }
     } catch (error) {
-        alert('Ошибка соединения');
+        customAlert('Ошибка соединения');
     }
 }
 

@@ -27,6 +27,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
     <script src="../js/toggle.js" defer></script>
     <script src="../js/hat.js" defer></script>
+    <script src="../js/alert.js" defer></script>
     <script src="../js/adminTabs.js" defer></script>
     <script src="../js/filters.js" defer></script>
     <script src="../js/customSelect.js" defer></script>
@@ -759,5 +760,6 @@
             <button id="addBtn" class="add">добавить</button>
         </div>
     </div>
+    <?php include '../component/alert.php'; ?>
 </body>
 </html>

@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="filter-option" data-value="Доктор">Врач</div>
                             <div class="filter-option" data-value="Персонал">Персонал</div>
                             <div class="filter-option" data-value="Администратор">Админ</div>
+                            <div class="filter-option" data-value="Заблокирован">Заблокирован</div>
                         </div>
                     </div>
                 </div>
@@ -455,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const is_public = document.querySelector('input[name="is_public"]:checked').value;
 
             if (!name || !directionId || !price) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -468,15 +469,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('Услуга добавлена');
+                    customAlert('Услуга добавлена');
                     hidePopup('add-popup');
                     // Перезагружаем текущую секцию
                     loadSection(currentSection);
                 } else {
-                    alert(result.message);
+                    customAlert(result.message);
                 }
             } catch (error) {
-                alert('Ошибка при добавлении');
+                customAlert('Ошибка при добавлении');
             }
         }//сохранение каба
         else if (currentSection === 'cabinets') {
@@ -484,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const number = document.getElementById('numberAdd').value;
 
             if (!floor || !number) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -496,11 +497,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Кабинет добавлен');
+                customAlert('Кабинет добавлен');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         }//сохранение записи
         else if (currentSection === 'appointments') {
@@ -517,7 +518,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const status = statusWrapper.dataset.value;
 
             if (!patient_id || !doctor_id || !service_id || !date || !time) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -529,11 +530,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Запись добавлена');
+                customAlert('Запись добавлена');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         }//сохранение докторов
         else if (currentSection === 'doctors') {
@@ -548,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const cabinet_id = cabinetWrapper.dataset.value || null;
             const exp = document.getElementById('expAdd').value;
             if (!user_id || !role || !direction_id || !exp) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -560,11 +561,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Специалист добавлен');
+                customAlert('Специалист добавлен');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         }//сохранение графика
         else if (currentSection === 'doctorSchedule') {
@@ -573,12 +574,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const days = Array.from(checkboxes).map(cb => cb.value);
 
             if (!doctorId) {
-                alert('Ошибка: не выбран врач');
+                customAlert('Ошибка: не выбран врач');
                 return;
             }
 
             if (days.length === 0) {
-                alert('Выберите хотя бы один день');
+                customAlert('Выберите хотя бы один день');
                 return;
             }
 
@@ -590,11 +591,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('График добавлен');
+                customAlert('График добавлен');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         }//сохраняем диагноз
         else if (currentSection === 'diagnose') {
@@ -607,7 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const diagnose_text = document.getElementById('diagnoseAdd').value;
 
             if (!patient_id || !doctor_id || !date || !diagnose_text) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -619,11 +620,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Диагноз добавлен');
+                customAlert('Диагноз добавлен');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         }//сохранение симптома 
         else if (currentSection === 'symptomes') {
@@ -631,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const priority = document.getElementById('priorityAdd').value;
 
             if (!keyword || !priority) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -641,7 +642,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const direction_id = dirData.direction_id;
 
             if (!direction_id) {
-                alert('Ошибка: не удалось определить направление врача');
+                customAlert('Ошибка: не удалось определить направление врача');
                 return;
             }
 
@@ -653,11 +654,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Симптом добавлен');
+                customAlert('Симптом добавлен');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         }
     });
@@ -681,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(user => {
                     if (!user.user_id) {
-                        alert('Ошибка загрузки данных');
+                        customAlert('Ошибка загрузки данных');
                         return;
                     }
 
@@ -703,7 +704,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     document.getElementById('phoneEdit').value = formatPhone(user.phone_num);
 
                     // Заполняем селект ролей (все роли)
-                    const allRoles = ['Пользователь', 'Администратор', 'Доктор', 'Персонал'];
+                    const allRoles = ['Пользователь', 'Администратор', 'Доктор', 'Персонал', 'Заблокирован'];
                     const roleOptions = document.querySelector('#editUsers .options-container');
                     roleOptions.innerHTML = allRoles.map(role =>
                         `<div class="filter-option" data-value="${role}">${role}</div>`
@@ -750,7 +751,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(service => {
                     if (!service.service_id) {
-                        alert('Ошибка загрузки данных');
+                        customAlert('Ошибка загрузки данных');
                         return;
                     }
 
@@ -806,7 +807,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(cabinet => {
                     if (!cabinet.cabinet_id) {
-                        alert('Ошибка загрузки данных');
+                        customAlert('Ошибка загрузки данных');
                         return;
                     }
 
@@ -842,7 +843,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(app => {
                     if (!app.appointment_id) {
-                        alert('Ошибка загрузки данных');
+                        customAlert('Ошибка загрузки данных');
                         return;
                     }
 
@@ -950,7 +951,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(doctor => {
                     if (!doctor.doctor_id) {
-                        alert('Ошибка загрузки данных');
+                        customAlert('Ошибка загрузки данных');
                         return;
                     }
 
@@ -1071,7 +1072,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(diagnose => {
                     if (!diagnose.diagnose_id) {
-                        alert('Ошибка загрузки данных');
+                        customAlert('Ошибка загрузки данных');
                         return;
                     }
 
@@ -1149,7 +1150,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(response => response.json())
                 .then(symptom => {
                     if (!symptom.id) {
-                        alert('Ошибка загрузки данных');
+                        customAlert('Ошибка загрузки данных');
                         return;
                     }
 
@@ -1178,7 +1179,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const role = roleWrapper.dataset.value;
 
             if (!surname || !name || !phoneRaw || !role) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -1197,11 +1198,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Пользователь обновлён');
+                customAlert('Пользователь обновлён');
                 hidePopup('edit-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         } else if (currentSection === 'services') {
             const serviceId = document.querySelector('#edit-popup').dataset.serviceId;
@@ -1214,7 +1215,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const is_public = document.querySelector('input[name="is_public"]:checked').value;
 
             if (!name || !direction_id || !price) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -1226,11 +1227,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Услуга обновлена');
+                customAlert('Услуга обновлена');
                 hidePopup('edit-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         } else if (currentSection === 'cabinets') {
             const cabinetId = document.querySelector('#edit-popup').dataset.cabinetId;
@@ -1240,7 +1241,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const number = document.getElementById('numberEdit').value;
 
             if (!floor || !number) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -1252,11 +1253,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Кабинет обновлён');
+                customAlert('Кабинет обновлён');
                 hidePopup('edit-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         } else if (currentSection === 'appointments') {
             const appointmentId = document.querySelector('#edit-popup').dataset.appointmentId;
@@ -1279,19 +1280,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Проверяем обязательные поля
             if (!patient_id || !doctor_id || !service_id || !status) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
             // Если изменился врач — обязательно нужно выбрать дату и время
             const originalDoctorId = document.querySelector('#edit-popup').dataset.originalDoctorId;
             if (originalDoctorId != doctor_id && (!date || !time)) {
-                alert('При смене врача необходимо выбрать новую дату и время');
+                customAlert('При смене врача необходимо выбрать новую дату и время');
                 return;
             }
 
             if (date && !time) {
-                alert('Выберите время');
+                customAlert('Выберите время');
                 return;
             }
 
@@ -1311,11 +1312,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Запись обновлена');
+                customAlert('Запись обновлена');
                 hidePopup('edit-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         } else if (currentSection === 'doctors') {
             const doctorId = document.querySelector('#edit-popup').dataset.doctorId;
@@ -1331,14 +1332,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const exp = document.getElementById('expEdit').value;
 
             if (!role || !direction_id || !exp) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
             // Проверка для персонала
             const staffDirections = [11, 12, 13]; // ID процедурного, лаборатории, лучевой
             if (role === 'Персонал' && !staffDirections.includes(parseInt(direction_id))) {
-                alert('Персонал может работать только в процедурном кабинете, лабораторной диагностике или лучевой диагностике');
+                customAlert('Персонал может работать только в процедурном кабинете, лабораторной диагностике или лучевой диагностике');
                 return;
             }
 
@@ -1350,11 +1351,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Врач обновлён');
+                customAlert('Врач обновлён');
                 hidePopup('edit-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         } else if (currentSection === 'doctorSchedule') {
             const doctorId = document.querySelector('#edit-popup').dataset.doctorId;
@@ -1364,7 +1365,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const newDays = Array.from(checkboxes).map(cb => cb.value);
 
             if (newDays.length === 0) {
-                alert('Выберите хотя бы один день');
+                customAlert('Выберите хотя бы один день');
                 return;
             }
 
@@ -1390,11 +1391,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('График обновлён');
+                customAlert('График обновлён');
                 hidePopup('edit-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
 
         } else if (currentSection === 'diagnose') {
@@ -1407,7 +1408,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const diagnose_text = document.getElementById('diagnoseEdit').value;
 
             if (!patient_id || !date || !diagnose_text) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -1417,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const doctor_id = doctorData.doctor_id;
 
             if (!doctor_id) {
-                alert('Ошибка: не удалось определить врача');
+                customAlert('Ошибка: не удалось определить врача');
                 return;
             }
 
@@ -1429,11 +1430,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Диагноз обновлён');
+                customAlert('Диагноз обновлён');
                 hidePopup('edit-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         } else if (currentSection === 'symptomes') {
             const symptomId = document.querySelector('#edit-popup').dataset.symptomId;
@@ -1443,7 +1444,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const priority = document.getElementById('priorityEdit').value;
 
             if (!keyword || !priority) {
-                alert('Заполните все поля');
+                customAlert('Заполните все поля');
                 return;
             }
 
@@ -1455,11 +1456,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (result.success) {
-                alert('Симптом обновлён');
+                customAlert('Симптом обновлён');
                 hidePopup('edit-popup');
                 loadSection(currentSection);
             } else {
-                alert(result.message);
+                customAlert(result.message);
             }
         }
     });
@@ -1483,9 +1484,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (result.success) {
             document.querySelector('#editUsers img').src = result.photoPath + '?t=' + Date.now();
-            alert('Фото обновлено');
+            customAlert('Фото обновлено');
         } else {
-            alert(result.message);
+            customAlert(result.message);
         }
     });
     document.getElementById('editUsers').addEventListener('click', function (e) {
@@ -1516,11 +1517,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const newSrc = '../img/avatars/none.svg?';
             document.querySelector('#editUsers img').src = newSrc;
             document.getElementById('deleteUserAvatarBtn').style.display = 'none';
-            alert('Фото удалено');
+            customAlert('Фото удалено');
             // Можно обновить карточку в списке, но проще — перезагрузить секцию
             loadSection('users');
         } else {
-            alert(result.message);
+            customAlert(result.message);
         }
     });
 
@@ -1584,13 +1585,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const result = await response.json();
 
         if (result.success) {
-            alert('Удалено');
+            customAlert('Удалено');
             hidePopup('delete-popup');
             // Перезагружаем текущую секцию
             const currentSection = document.querySelector('.tabBtn.selected').dataset.section;
             loadSection(currentSection);
         } else {
-            alert(result.message);
+            customAlert(result.message);
         }
     });
 
@@ -1606,7 +1607,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const doctorId = doctorWrapper.dataset.value;
 
             if (!doctorId) {
-                alert('Сначала выберите врача');
+                customAlert('Сначала выберите врача');
                 document.getElementById('stepDateEdit').style.display = 'none';
                 document.getElementById('stepInfoEdit').style.display = 'flex';
                 return;
@@ -1680,7 +1681,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('showTimeBtn').addEventListener('click', function () {
             const dateInput = document.querySelector('#editApps #dateInput');
             if (!dateInput.value) {
-                alert('Сначала выберите дату');
+                customAlert('Сначала выберите дату');
                 return;
             }
             document.getElementById('stepDateEdit').style.display = 'none';

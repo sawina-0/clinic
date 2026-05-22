@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         }
         console.log('serviceSelected сработал, тип:', e.detail.type);
-console.log('madeAppBtn в DOM:', document.getElementById('madeAppService'));
+        console.log('madeAppBtn в DOM:', document.getElementById('madeAppService'));
         const madeAppBtn = document.getElementById('madeAppService');
         if (madeAppBtn) madeAppBtn.disabled = false;
     });
@@ -58,8 +58,12 @@ console.log('madeAppBtn в DOM:', document.getElementById('madeAppService'));
                 window.location.href = '../pages/auth.php';
                 return;
             }
+            if (window.isBlocked) {
+                customAlert('Ваш аккаунт заблокирован. Обратитесь к администратору.');
+                return;
+            }
             if (!window.isPatient) {
-                alert('Работники клиники не могут записываться на приём');
+                customAlert('Работники клиники не могут записываться на приём');
                 return;
             }
 
@@ -105,8 +109,12 @@ console.log('madeAppBtn в DOM:', document.getElementById('madeAppService'));
                 window.location.href = '../pages/auth.php';
                 return;
             }
+            if (window.isBlocked) {
+                customAlert('Ваш аккаунт заблокирован. Обратитесь к администратору.');
+                return;
+            }
             if (!window.isPatient) {
-                alert('Работники клиники не могут записываться на приём');
+                customAlert('Работники клиники не могут записываться на приём');
                 return;
             }
 
@@ -268,10 +276,10 @@ console.log('madeAppBtn в DOM:', document.getElementById('madeAppService'));
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Запись создана');
+                    customAlert('Запись создана');
                     hidePopup('app-popup');
                 } else {
-                    alert('Ошибка: ' + data.message);
+                    customAlert('Ошибка: ' + data.message);
                 }
             });
     });

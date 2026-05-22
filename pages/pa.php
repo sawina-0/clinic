@@ -5,6 +5,11 @@
         header('Location: ./auth.php');
         exit;
     }
+    if(isBlocked()){
+        session_destroy();
+        header('Location: ../index.php');
+        exit;
+    }
 
     $stmt = $pdo->prepare("SELECT * FROM users WHERE user_id = ?");
     $stmt->execute([$_SESSION['user_id']]);
@@ -40,6 +45,7 @@
         JOIN directions dir ON d.direction_id = dir.direction_id
         WHERE a.user_id = ? AND a.status = 'запланирован'
         ORDER BY a.app_datetime ASC
+        LIMIT 5
     ");
     $stmt->execute([$_SESSION['user_id']]);
     $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -57,6 +63,7 @@
         JOIN directions dir ON doc.direction_id = dir.direction_id
         WHERE d.user_id = ?
         ORDER BY d.date ASC
+        LIMIT 5
     ");
     $stmt->execute([$_SESSION['user_id']]);
     $diagnoses = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -75,6 +82,7 @@
     <script src="../js/maskAndError.js" defer></script>
     <script src="../js/profile.js" defer></script>
     <script src="../js/hat.js" defer></script>
+    <script src="../js/alert.js" defer></script>
     <title>Клиника кедр - Профиль</title>
 </head>
 <body>
@@ -255,5 +263,6 @@
             </div>
         </div>
     </div>
+    <?php include '../component/alert.php'; ?>
 </body>
 </html>

@@ -6,7 +6,7 @@
     function openSmartAppBooking() {
         // Проверяем, что всё необходимое есть
         if (!window.selectedDoctor || !window.selectedService) {
-            alert('Ошибка: данные для записи не загружены');
+            customAlert('Ошибка: данные для записи не загружены');
             return;
         }
 
@@ -137,11 +137,11 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Запись создана');
+                customAlert('Запись создана');
                 hidePopup('app-popup');
                 location.reload(); // или обновить список записей
             } else {
-                alert('Ошибка: ' + data.message);
+                customAlert('Ошибка: ' + data.message);
             }
         });
     });

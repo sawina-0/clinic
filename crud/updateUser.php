@@ -72,7 +72,7 @@ if ($_SERVER['CONTENT_TYPE'] === 'application/json') {
             $stmt = $pdo->prepare("DELETE FROM doctors WHERE user_id = ?");
             $stmt->execute([$user_id]);
         }
-        if (in_array($oldRole, ['Доктор', 'Персонал']) && in_array($role, ['Пользователь', 'Администратор'])) {
+        if (in_array($oldRole, ['Доктор', 'Персонал']) && in_array($role, ['Пользователь', 'Администратор', 'Заблокирован'])) {
             $stmt = $pdo->prepare("DELETE FROM doctors WHERE user_id = ?");
             $stmt->execute([$user_id]);
         }

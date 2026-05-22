@@ -41,13 +41,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Проверка размера (макс 2MB)
             if (file.size > 2 * 1024 * 1024) {
-                alert('Файл слишком большой. Максимум 2MB');
+                customAlert('Файл слишком большой. Максимум 2MB');
                 return;
             }
 
             // Проверка типа
             if (!file.type.startsWith('image/')) {
-                alert('Можно загружать только изображения');
+                customAlert('Можно загружать только изображения');
                 return;
             }
 
@@ -67,10 +67,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (profilePhoto) profilePhoto.src = newPhotoSrc;
                     if (editPhoto) editPhoto.src = newPhotoSrc;
                 } else {
-                    alert(result.message);
+                    customAlert(result.message);
                 }
             } catch (error) {
-                alert('Ошибка загрузки');
+                customAlert('Ошибка загрузки');
             }
         });
     }
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const result = await response.json();
 
                 if (result.success) {
-                    alert(result.message);
+                    customAlert(result.message);
 
                     // Обновляем отображаемые данные
                     const viewSurname = document.getElementById('viewSurname');
@@ -153,11 +153,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (newPassInput) newPassInput.value = '';
                     if (newPassAgainInput) newPassAgainInput.value = '';
                 } else {
-                    alert(result.message);
+                    customAlert(result.message);
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
-                alert('Произошла ошибка при сохранении');
+                customAlert('Произошла ошибка при сохранении');
             } finally {
                 // В любом случае разблокируем кнопку
                 saveBtn.disabled = false;
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('Запись отменена');
+                    customAlert('Запись отменена');
 
                     // Закрываем попап
                     const popup = document.getElementById('cancel-popup');
@@ -230,10 +230,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     currentCancelId = null;
                 } else {
-                    alert(result.message);
+                    customAlert(result.message);
                 }
             } catch (error) {
-                alert('Ошибка при отмене');
+                customAlert('Ошибка при отмене');
             }
         });
     }
@@ -354,11 +354,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            alert('Запись перенесена');
+                            customAlert('Запись перенесена');
                             hidePopup('reschedule-popup');
                             location.reload();
                         } else {
-                            alert(data.message);
+                            customAlert(data.message);
                         }
                     });
             };
@@ -388,12 +388,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.getElementById('profilePhoto').src = '../img/avatars/none.svg';
                         document.getElementById('editPhoto').src = '../img/avatars/none.svg';
                         deleteBtn.remove();
-                        alert('Фото удалено');
+                        customAlert('Фото удалено');
                     } else {
-                        alert(result.message);
+                        customAlert(result.message);
                     }
                 } catch (error) {
-                    alert('Ошибка при удалении');
+                    customAlert('Ошибка при удалении');
                 }
             });
         }

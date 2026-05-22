@@ -2,7 +2,7 @@
     session_start();
     require_once '../config.php';
 
-    if(isLogged()){
+    if(isLogged() || isBlocked()){
         header('Location: ../index.php');
         exit;
     }
@@ -66,6 +66,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no">
     <script src="../js/maskAndError.js" defer></script>
+    <script src="../js/alert.js" defer></script>
     <link rel="shortcut icon" href="../img/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="../css/style.css">
     <title>Клиника Кедр - Регистрация</title>
@@ -112,5 +113,6 @@
             
         </form>
     </main>
+    <?php include '../component/alert.php'; ?>
 </body>
 </html>

@@ -32,6 +32,7 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script src="./js/hat.js" defer></script>
     <script src="./js/scroll.js" defer></script>
     <script src="./js/accordion.js" defer></script>
+    <script src="../js/alert.js" defer></script>
     <title>Клиника Кедр - Главная</title>
 </head>
 <body>
@@ -324,5 +325,6 @@ $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </footer>
+    <?php include './component/alert.php'; ?>
 </body>
 </html>

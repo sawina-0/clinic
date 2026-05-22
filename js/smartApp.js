@@ -11,7 +11,7 @@
         const symptoms = symptomsTextarea.value.trim();
 
         if (!symptoms) {
-            alert('Пожалуйста, опишите ваши симптомы');
+            customAlert('Пожалуйста, опишите ваши симптомы');
             return;
         }
 
@@ -88,8 +88,12 @@ document.addEventListener('click', function (e) {
         window.location.href = '../pages/auth.php';
         return;
     }
+    if (window.isBlocked) {
+        customAlert('Ваш аккаунт заблокирован. Обратитесь к администратору.');
+        return;
+    }
     if (!window.isPatient) {
-        alert('Работники клиники не могут записываться на приём');
+        customAlert('Работники клиники не могут записываться на приём');
         return;
     }
 
@@ -111,7 +115,7 @@ document.addEventListener('click', function (e) {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert(data.error);
+                customAlert(data.error);
                 return;
             }
 
@@ -126,11 +130,11 @@ document.addEventListener('click', function (e) {
                 openSmartAppBooking();
             } else {
                 console.error('Функция openSmartAppBooking не найдена');
-                alert('Ошибка инициализации записи');
+                customAlert('Ошибка инициализации записи');
             }
         })
         .catch(err => {
             console.error('Ошибка загрузки услуги:', err);
-            alert('Не удалось загрузить услугу для записи');
+            customAlert('Не удалось загрузить услугу для записи');
         });
 });
