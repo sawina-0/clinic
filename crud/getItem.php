@@ -41,7 +41,7 @@ if ($type === 'user') {
     $stmt->execute([$id]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 } elseif ($type === 'diagnose') {
-    $stmt = $pdo->prepare("SELECT diagnose_id, user_id, doctor_id, date, diagnose_text FROM diagnose WHERE diagnose_id = ?");
+    $stmt = $pdo->prepare("SELECT diagnose_id, user_id, doctor_id, date, diagnose_text, file_name FROM diagnose WHERE diagnose_id = ?");
     $stmt->execute([$id]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
 } elseif ($type === 'symptom') {

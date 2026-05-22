@@ -55,6 +55,7 @@
         SELECT 
             d.date,
             d.diagnose_text,
+            d.file_name,
             CONCAT(u.surname, ' ', LEFT(u.name, 1), '.', LEFT(u.sec_name, 1), '.') as doctor_short,
             dir.specialist_name
         FROM diagnose d
@@ -209,6 +210,13 @@
                                         <span>Диагноз:</span>
                                         <p><?= htmlspecialchars($diag['diagnose_text']) ?></p>
                                     </div>
+
+                                    <?php if (!empty($diag['file_name'])): ?>
+                                        <div class="file-link">
+                                            <a href="../func/download.php?file=<?= urlencode($diag['file_name']) ?>" target="_blank">
+                                            Смотерть файл</a>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>

@@ -64,6 +64,7 @@
             <nav class="desktopNav">
                 <ul>
                     <li><button class="tabBtn selected" data-section="appointments">записи</button></li>
+                    <li><button class="tabBtn" data-section="analyzes">анализы</button></li>
                 </ul>
             </nav>
             <?endif?>
@@ -478,6 +479,11 @@
                     <label for="diagnoseEdit">Диагноз:</label>
                     <input type="text" name="diagnoseEdit" id="diagnoseEdit" required>
                 </div>
+                <div class="field">
+                    <label for="diagnoseFile">Файл (необязательно):</label>
+                    <input type="file" name="diagnoseFile" id="diagnoseFile" accept=".pdf, .jpg, .jpeg, .png">
+                    <div id="currentFileInfo"></div>
+                </div>
             </div>
             <div id="editSymp" class="popupContent">
                 <div class="field">
@@ -745,6 +751,10 @@
                 <div class="field">
                     <label for="diagnoseAdd">Диагноз:</label>
                     <input type="text" name="diagnoseAdd" id="diagnoseAdd" required>
+                </div>
+                <div class="field">
+                    <label for="diagnoseFileAdd">Файл (необязательно):</label>
+                    <input type="file" name="diagnoseFileAdd" id="diagnoseFileAdd" accept=".pdf, .jpg, .jpeg, .png">
                 </div>
             </div>
             <div id="addSymp" class="popupContent">

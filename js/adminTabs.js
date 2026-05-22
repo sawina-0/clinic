@@ -368,6 +368,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const dateInput = document.querySelector('#addDiagnose #dateInput');
             if (dateInput) dateInput.value = '';
             document.getElementById('diagnoseAdd').value = '';
+            const fileInput = document.getElementById('diagnoseFileAdd');
+            if (fileInput) fileInput.value = '';
+
 
             // Сбрасываем селект пациента
             const patientWrapper = document.querySelector('#addDiagnose .custom-select-wrapper');
@@ -423,6 +426,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('priorityAdd').value = '';
         }
     });
+    //расписание
     document.addEventListener('click', function (e) {
         const addScheduleBtn = e.target.closest('.scheduleCard .addBtn');
         if (!addScheduleBtn) return;
@@ -606,16 +610,25 @@ document.addEventListener('DOMContentLoaded', function () {
             const doctor_id = doctorWrapper.dataset.value;
             const date = document.querySelector('#addDiagnose #dateInput').value;
             const diagnose_text = document.getElementById('diagnoseAdd').value;
+            const fileInput = document.getElementById('diagnoseFileAdd');
 
             if (!patient_id || !doctor_id || !date || !diagnose_text) {
                 customAlert('Заполните все поля');
                 return;
             }
 
+            const formData = new FormData();
+            formData.append('patient_id', patient_id);
+            formData.append('doctor_id', doctor_id);
+            formData.append('date', date);
+            formData.append('diagnose_text', diagnose_text);
+            if (fileInput.files.length > 0) {
+                formData.append('diagnoseFile', fileInput.files[0]);
+            }
+
             const response = await fetch('../crud/addDiagnose.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ patient_id, doctor_id, date, diagnose_text })
+                body: formData
             });
             const result = await response.json();
 
@@ -1128,6 +1141,16 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Сохраняем ID
                     document.querySelector('#edit-popup').dataset.diagnoseId = diagnoseId;
 
+                    // Показываем информацию о файле
+                    const fileContainer = document.getElementById('currentFileInfo');
+                    if (fileContainer) {
+                        if (diagnose.file_name) {
+                            fileContainer.innerHTML = `<p>Текущий файл: <a href="../func/download.php?file=${encodeURIComponent(diagnose.file_name)}" target="_blank">${diagnose.file_name}</a></p>`;
+                        } else {
+                            fileContainer.innerHTML = '<p>Файл не прикреплён</p>';
+                        }
+                    }
+
                     showPopup('edit-popup');
                 });
             return;
@@ -1422,11 +1445,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const response = await fetch('../crud/updateDiagnose.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ diagnose_id: diagnoseId, patient_id, doctor_id, date, diagnose_text })
-            });
+            const fileInput = document.getElementById('diagnoseFile');
+            const hasFile = fileInput.files.length > 0;
+
+            let response;
+            if (hasFile) {
+                const formData = new FormData();
+                formData.append('diagnose_id', diagnoseId);
+                formData.append('patient_id', patient_id);
+                formData.append('date', date);
+                formData.append('diagnose_text', diagnose_text);
+                formData.append('diagnoseFile', fileInput.files[0]);
+
+                response = await fetch('../crud/updateDiagnose.php', {
+                    method: 'POST',
+                    body: formData
+                });
+            } else {
+                response = await fetch('../crud/updateDiagnose.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        diagnose_id: diagnoseId,
+                        patient_id: patient_id,
+                        date: date,
+                        diagnose_text: diagnose_text
+                    })
+                });
+            }
             const result = await response.json();
 
             if (result.success) {

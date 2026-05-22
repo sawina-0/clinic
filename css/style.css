@@ -76,6 +76,15 @@ button{
 ul{
     list-style: none;
 }
+input[type="file"]::file-selector-button{
+    border: none;
+    padding: 5px 10px;
+    background-color: var(--aboutWhite);
+    color: var(--brown);
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Comfortaa';
+}
 .container{
     width: 1200px;
     max-width: 96%;
@@ -2461,6 +2470,10 @@ select{
     font-weight: 600;
     text-align: center;
 }
+.file-link a{
+    color: var(--brown);
+    font-weight: 600;
+}
 #cancel-popup h2{
     font-size: 32px;
     color: var(--red);
@@ -3068,6 +3081,14 @@ input[type="radio"]:checked{
     width: 100%;
     z-index: 20;
 }
+#currentFileInfo a{
+    color: var(--lightGreen);
+    font-weight: 700;
+}
+.diagnoseCard a{
+    color: var(--lightGreen);
+    font-weight: 700;
+}
 @media screen and (max-width: 974px) {
     .hatAdmin>a{
         position: static;
@@ -3401,7 +3422,7 @@ input[type="radio"]:checked{
     font-size: 18px;
     color: var(--brown);
     width: 100%;
-    text-align: left;
+    text-align: center;
 }
 .custom-alert-content button{
     font-size: 16px;

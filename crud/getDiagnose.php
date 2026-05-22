@@ -13,6 +13,7 @@ $sql = "SELECT
             diag.diagnose_id,
             diag.date,
             diag.diagnose_text,
+            diag.file_name,
             CONCAT(du.surname, ' ', LEFT(du.name, 1), '.', LEFT(du.sec_name, 1), '.') as doctor_short,
             CONCAT(pu.surname, ' ', LEFT(pu.name, 1), '.', LEFT(pu.sec_name, 1), '.') as patient_short
         FROM diagnose diag
@@ -47,8 +48,9 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $diagnoses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-foreach ($diagnoses as $diag):
+foreach ($diagnoses as $diag): 
     $date = new DateTime($diag['date']);
+    $hasFile = !empty($diag['file_name']) && file_exists('../files/' . $diag['file_name']);
 ?>
     <div class="diagnoseCard card" data-id="<?= $diag['diagnose_id'] ?>">
         <div class="info">
@@ -56,6 +58,12 @@ foreach ($diagnoses as $diag):
             <p>Пациент: <?= htmlspecialchars($diag['patient_short']) ?></p>
             <p>Врач: <?= htmlspecialchars($diag['doctor_short']) ?></p>
             <p>Диагноз: <?= htmlspecialchars($diag['diagnose_text']) ?></p>
+            <?php if ($hasFile): ?>
+                <p>
+                    <a href="../func/download.php?file=<?= urlencode($diag['file_name']) ?>" target="_blank"><?= htmlspecialchars($diag['file_name']) ?>
+                    </a>
+                </p>
+            <?php endif; ?>
         </div>
         <div class="btns">
             <button class="editBtn" data-id="<?= $diag['diagnose_id'] ?>"><img src="../img/svg/pencil.svg" alt="редактировать"></button>
