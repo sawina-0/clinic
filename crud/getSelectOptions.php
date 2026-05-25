@@ -102,6 +102,25 @@ if ($type === 'directions') {
     foreach ($cabinets as $cab) {
         echo '<div class="filter-option" data-value="' . $cab['id'] . '">' . htmlspecialchars($cab['name']) . '</div>';
     }
+} elseif ($type === 'labServicesByDoctor') {
+    $userId = $_SESSION['user_id'];
+    // Получаем направление врача
+    $stmt = $pdo->prepare("SELECT direction_id FROM doctors WHERE user_id = ?");
+    $stmt->execute([$userId]);
+    $direction_id = $stmt->fetchColumn();
+
+    if (!$direction_id) {
+        echo '';
+        exit;
+    }
+
+    // Услуги только этого направления
+    $stmt = $pdo->prepare("SELECT service_id as id, name FROM services WHERE direction_id = ? ORDER BY name");
+    $stmt->execute([$direction_id]);
+    $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($services as $service) {
+        echo '<div class="filter-option" data-value="' . $service['id'] . '">' . htmlspecialchars($service['name']) . '</div>';
+    }
 }
 
 ?>

@@ -2,7 +2,7 @@
 session_start();
 require_once '../config.php';
 
-if (!isLogged() || !isDoctor()) {
+if (!isLogged() || !(isDoctor() || isStuff())) {
     echo json_encode(['doctor_id' => 0]);
     exit;
 }

@@ -14,13 +14,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Инициализация выбора времени (для записей)
     function initTimeSlots(container, doctorId, date, onSelect) {
-        console.log('initTimeSlots вызван, doctorId:', doctorId, 'date:', date);
         if (!doctorId || !date) return;
         
         fetch(`../func/getFreeTime.php?doctor_id=${doctorId}&date=${date}`)
             .then(response => response.text())
             .then(data => {
-                console.log('Ответ от getFreeTime.php:', data);
                 container.innerHTML = data;
                 container.style.display = 'grid';
                 

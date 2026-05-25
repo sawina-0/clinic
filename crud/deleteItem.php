@@ -104,10 +104,30 @@ try {
         $stmt->execute([$id]);
         
     } elseif ($type === 'diagnose') {
+        $stmt = $pdo->prepare("SELECT file_name FROM diagnose WHERE diagnose_id = ?");
+        $stmt->execute([$id]);
+        $file = $stmt->fetchColumn();
+        
+        if ($file && file_exists("../files/" . $file)) {
+            unlink("../files/" . $file);
+        }
+        
         $stmt = $pdo->prepare("DELETE FROM diagnose WHERE diagnose_id = ?");
         $stmt->execute([$id]);
     } elseif ($type === 'symptom') {
         $stmt = $pdo->prepare("DELETE FROM symptoms WHERE id = ?");
+        $stmt->execute([$id]);
+    } elseif ($type === 'analysis') {
+        // Получаем имя файла перед удалением
+        $stmt = $pdo->prepare("SELECT file_name FROM analyzes WHERE analysis_id = ?");
+        $stmt->execute([$id]);
+        $file = $stmt->fetchColumn();
+        
+        if ($file && file_exists("../files/" . $file)) {
+            unlink("../files/" . $file);
+        }
+        
+        $stmt = $pdo->prepare("DELETE FROM analyzes WHERE analysis_id = ?");
         $stmt->execute([$id]);
     }
     

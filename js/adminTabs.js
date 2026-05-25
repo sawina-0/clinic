@@ -89,6 +89,8 @@ document.addEventListener('DOMContentLoaded', function () {
             filterHtml = '';
         } else if (section === 'symptomes') {
             filterHtml = '';
+        } else if (section === 'analyzes') {
+            filterHtml = '';
         } else {
             filterHtml = `
                 <div class="custom-select-wrapper">
@@ -424,6 +426,62 @@ document.addEventListener('DOMContentLoaded', function () {
             // Очищаем поля
             document.getElementById('sympAdd').value = '';
             document.getElementById('priorityAdd').value = '';
+        } else if (currentSection === 'analyzes') {
+            document.getElementById('addAnalysis').style.display = 'flex';
+
+            // Очищаем поля
+            document.getElementById('analysisFileAdd').value = '';
+            const dateInput = document.querySelector('#addAnalysis .calendar');
+            if (dateInput) dateInput.value = '';
+
+            // Загружаем пациентов
+            const patientContainer = document.querySelector('#addAnalysis .options-container:first-of-type');
+            fetch('../crud/getSelectOptions.php?type=patients')
+                .then(response => response.text())
+                .then(data => patientContainer.innerHTML = data);
+
+            // Загружаем услуги (только по направлению текущего врача)
+            const serviceContainer = document.querySelectorAll('#addAnalysis .options-container')[1];
+            fetch('../crud/getSelectOptions.php?type=labServicesByDoctor')
+                .then(response => response.text())
+                .then(data => serviceContainer.innerHTML = data);
+
+            // Загружаем врачей
+            const doctorContainer = document.querySelectorAll('#addAnalysis .options-container')[2];
+            fetch('../crud/getSelectOptions.php?type=currentDoctor')
+                .then(response => response.text())
+                .then(data => doctorContainer.innerHTML = data);
+
+            // Инициализируем календарь с расписанием врача
+            if (dateInput) {
+                // Получаем doctor_id текущего пользователя через fetch
+                fetch('../func/getCurrentDoctorId.php')
+                    .then(response => response.json())
+                    .then(doctorData => {
+                        const doctorId = doctorData.doctor_id;
+                        if (!doctorId) return;
+
+                        fetch(`../func/getDoctorSchedule.php?doctor_id=${doctorId}`)
+                            .then(response => response.json())
+                            .then(schedule => {
+                                flatpickr(dateInput, {
+                                    locale: 'ru',
+                                    dateFormat: 'd.m.Y',
+                                    maxDate: 'today',
+                                    disable: [
+                                        function (date) {
+                                            if (!schedule || schedule.length === 0) return true;
+                                            return !schedule.includes(date.getDay());
+                                        }
+                                    ]
+                                });
+                            });
+                    });
+            }
+
+            if (typeof window.initCustomSelects === 'function') {
+                window.initCustomSelects();
+            }
         }
     });
     //расписание
@@ -668,6 +726,39 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (result.success) {
                 customAlert('Симптом добавлен');
+                hidePopup('add-popup');
+                loadSection(currentSection);
+            } else {
+                customAlert(result.message);
+            }
+        }//сохранение анализов
+        else if (currentSection === 'analyzes') {
+            const patientWrapper = document.querySelector('#addAnalysis .custom-select-wrapper:first-of-type');
+            const serviceWrapper = document.querySelectorAll('#addAnalysis .custom-select-wrapper')[1];
+            const doctorWrapper = document.querySelectorAll('#addAnalysis .custom-select-wrapper')[2];
+            const date = document.querySelector('#addAnalysis .calendar').value;
+            const fileInput = document.getElementById('analysisFileAdd');
+
+            if (!patientWrapper.dataset.value || !serviceWrapper.dataset.value || !doctorWrapper.dataset.value || !date || fileInput.files.length === 0) {
+                customAlert('Заполните все поля и выберите файл');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('patient_id', patientWrapper.dataset.value);
+            formData.append('service_id', serviceWrapper.dataset.value);
+            formData.append('doctor_id', doctorWrapper.dataset.value);
+            formData.append('date', date);
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('../crud/addAnalysis.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                customAlert('Анализ добавлен');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
@@ -1185,6 +1276,119 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             return;
         }
+
+        //9. Анализы
+        const analysisEdit = e.target.closest('.analysisCard .editBtn');
+        if (analysisEdit) {
+            e.preventDefault();
+
+            document.querySelectorAll('#edit-popup .popupContent').forEach(block => {
+                block.style.display = 'none';
+            });
+            document.getElementById('editAnalysis').style.display = 'flex';
+
+            const card = analysisEdit.closest('.analysisCard');
+            const analysisId = card.dataset.id;
+
+            fetch(`../crud/getItem.php?type=analysis&id=${analysisId}`)
+                .then(response => response.json())
+                .then(analysis => {
+                    if (!analysis.analysis_id) {
+                        customAlert('Ошибка загрузки данных');
+                        return;
+                    }
+
+                    // Заполняем дату
+                    const dateInput = document.querySelector('#editAnalysis .calendar');
+                    if (dateInput && analysis.date) {
+                        const dateObj = new Date(analysis.date);
+                        const day = String(dateObj.getDate()).padStart(2, '0');
+                        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                        const year = dateObj.getFullYear();
+                        dateInput.value = `${day}.${month}.${year}`;
+                    }
+
+                    // Информация о текущем файле
+                    const fileContainer = document.getElementById('currentFileInfoA');
+                    if (fileContainer) {
+                        if (analysis.file_name) {
+                            fileContainer.innerHTML = `<p>Текущий файл: <a href="../func/download.php?file=${encodeURIComponent(analysis.file_name)}" target="_blank">${analysis.file_name}</a></p>`;
+                        } else {
+                            fileContainer.innerHTML = '<p>Файл не прикреплён</p>';
+                        }
+                    }
+
+                    // Загружаем пациентов
+                    const patientContainer = document.querySelector('#editAnalysis .options-container:first-of-type');
+                    fetch('../crud/getSelectOptions.php?type=patients')
+                        .then(response => response.text())
+                        .then(data => {
+                            patientContainer.innerHTML = data;
+                            const patientOption = Array.from(patientContainer.children).find(opt => opt.dataset.value == analysis.user_id);
+                            const patientWrapper = document.querySelector('#editAnalysis .custom-select-wrapper:first-of-type');
+                            const patientTrigger = patientWrapper.querySelector('.custom-select-trigger span');
+                            if (patientOption) {
+                                patientTrigger.textContent = patientOption.textContent;
+                                patientWrapper.dataset.value = analysis.user_id;
+                                patientOption.classList.add('selected');
+                            }
+                        });
+
+                    // Загружаем услуги
+                    const serviceContainer = document.querySelectorAll('#editAnalysis .options-container')[1];
+                    fetch('../crud/getSelectOptions.php?type=labServicesByDoctor')
+                        .then(response => response.text())
+                        .then(data => {
+                            serviceContainer.innerHTML = data;
+                            const serviceOption = Array.from(serviceContainer.children).find(opt => opt.dataset.value == analysis.service_id);
+                            const serviceWrapper = document.querySelectorAll('#editAnalysis .custom-select-wrapper')[1];
+                            const serviceTrigger = serviceWrapper.querySelector('.custom-select-trigger span');
+                            if (serviceOption) {
+                                serviceTrigger.textContent = serviceOption.textContent;
+                                serviceWrapper.dataset.value = analysis.service_id;
+                                serviceOption.classList.add('selected');
+                            }
+                        });
+
+                    // Инициализируем календарь
+                    const dateInputElem = document.querySelector('#editAnalysis .calendar');
+                    if (dateInputElem && !dateInputElem._flatpickr) {
+                        // получаем doctor_id текущего пользователя
+                        fetch('../func/getCurrentDoctorId.php')
+                            .then(res => res.json())
+                            .then(doctorData => {
+                                const doctorId = doctorData.doctor_id;
+                                if (doctorId) {
+                                    fetch(`../func/getDoctorSchedule.php?doctor_id=${doctorId}`)
+                                        .then(res => res.json())
+                                        .then(schedule => {
+                                            flatpickr(dateInputElem, {
+                                                locale: 'ru',
+                                                dateFormat: 'd.m.Y',
+                                                maxDate: 'today',
+                                                disable: [
+                                                    function (date) {
+                                                        if (!schedule || schedule.length === 0) return true;
+                                                        return !schedule.includes(date.getDay());
+                                                    }
+                                                ]
+                                            });
+                                        });
+                                } else {
+                                    flatpickr(dateInputElem, {
+                                        locale: 'ru',
+                                        dateFormat: 'd.m.Y',
+                                        maxDate: 'today'
+                                    });
+                                }
+                            });
+                    }
+
+                    document.querySelector('#edit-popup').dataset.analysisId = analysisId;
+                    showPopup('edit-popup');
+                });
+            return;
+        }
     });
     //сохранение редакта
     document.getElementById('editBtn').addEventListener('click', async function () {
@@ -1508,6 +1712,42 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 customAlert(result.message);
             }
+        } else if (currentSection === 'analyzes') {
+            const analysisId = document.querySelector('#edit-popup').dataset.analysisId;
+            if (!analysisId) return;
+
+            const patientWrapper = document.querySelector('#editAnalysis .custom-select-wrapper:first-of-type');
+            const serviceWrapper = document.querySelectorAll('#editAnalysis .custom-select-wrapper')[1];
+            const date = document.querySelector('#editAnalysis .calendar').value;
+            const fileInput = document.getElementById('analysisFileEdit');
+
+            if (!patientWrapper.dataset.value || !serviceWrapper.dataset.value || !date) {
+                customAlert('Заполните все поля');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('analysis_id', analysisId);
+            formData.append('patient_id', patientWrapper.dataset.value);
+            formData.append('service_id', serviceWrapper.dataset.value);
+            formData.append('date', date);
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            const response = await fetch('../crud/updateAnalysis.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                customAlert('Анализ обновлён');
+                hidePopup('edit-popup');
+                loadSection(currentSection);
+            } else {
+                customAlert(result.message);
+            }
         }
     });
     //редакт для фотки
@@ -1606,6 +1846,9 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (deleteBtn.closest('.symptomCard')) {
             type = 'symptom';
             id = deleteBtn.closest('.symptomCard').dataset.id;
+        } else if (deleteBtn.closest('.analysisCard')) {
+            type = 'analysis';
+            id = deleteBtn.closest('.analysisCard').dataset.id;
         }
 
         if (!type || !id) return;

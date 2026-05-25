@@ -3085,9 +3085,24 @@ input[type="radio"]:checked{
     color: var(--lightGreen);
     font-weight: 700;
 }
+#currentFileInfoA a{
+    color: var(--lightGreen);
+    font-weight: 700;
+}
 .diagnoseCard a{
     color: var(--lightGreen);
     font-weight: 700;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+.analysisCard{
+    align-items: flex-start;
+}
+.analysisCard a{
+    color: var(--lightGreen);
+    font-weight: 700;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 @media screen and (max-width: 974px) {
     .hatAdmin>a{

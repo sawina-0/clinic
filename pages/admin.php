@@ -495,6 +495,44 @@
                     <input type="num" name="priorityEdit" id="priorityEdit" required>
                 </div>
             </div>
+            <div id="editAnalysis" class="popupContent">
+                <input type="text" id="dateInput" class="calendar" placeholder="Выберите дату">
+                <div class="field">
+                    <span>Пациент:</span>
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-trigger">
+                            <span>Выберите пациента</span>
+                            <img src="../img/svg/selectArrow.svg" alt="">
+                        </div>
+                        <div class="custom-select-dropdown">
+                            <input type="text" class="search-input" placeholder="Поиск">
+                            <div class="options-container">
+                                <!-- пользователь. изначальный стоит выбраным сразу -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <span>Услуга:</span>
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-trigger">
+                            <span>Выберите услугу</span>
+                            <img src="../img/svg/selectArrow.svg" alt="">
+                        </div>
+                        <div class="custom-select-dropdown">
+                            <input type="text" class="search-input" placeholder="Поиск">
+                            <div class="options-container">
+                                <!-- услуга. изначальная стоит выбраной сразу -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="analysisFileEdit">Файл:</label>
+                    <input type="file" name="analysisFileEdit" id="analysisFileEdit" accept=".pdf, .jpg, .jpeg, .png">
+                    <div id="currentFileInfoA"></div>
+                </div>
+            </div>
             <button id="editBtn" class="edit">сохранить</button>
         </div>
     </div>
@@ -765,6 +803,59 @@
                 <div class="field">
                     <label for="priorityAdd">Приоритет:</label>
                     <input type="num" name="priorityAdd" id="priorityAdd" required>
+                </div>
+            </div>
+            <div id="addAnalysis" class="popupContent">
+                <input type="text" id="dateInput" class="calendar" placeholder="Выберите дату">
+                <div class="field">
+                    <span>Пациент:</span>
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-trigger">
+                            <span>Выберите пациента</span>
+                            <img src="../img/svg/selectArrow.svg" alt="">
+                        </div>
+                        <div class="custom-select-dropdown">
+                            <input type="text" class="search-input" placeholder="Поиск">
+                            <div class="options-container">
+                                <!-- пользователь. изначальный стоит выбраным сразу -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <span>Услуга:</span>
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-trigger">
+                            <span>Выберите услугу</span>
+                            <img src="../img/svg/selectArrow.svg" alt="">
+                        </div>
+                        <div class="custom-select-dropdown">
+                            <input type="text" class="search-input" placeholder="Поиск">
+                            <div class="options-container">
+                                <!-- услуга. изначальная стоит выбраной сразу -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <span>Специалист:</span>
+                    <div class="custom-select-wrapper">
+                        <div class="custom-select-trigger">
+                            <span>Выберите специалиста</span>
+                            <img src="../img/svg/selectArrow.svg" alt="">
+                        </div>
+                        <div class="custom-select-dropdown">
+                            <input type="text" class="search-input" placeholder="Поиск">
+                            <div class="options-container">
+                                <!-- врач. изначальный стоит выбраным сразу -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="analysisFileAdd">Файл:</label>
+                    <input type="file" name="analysisFileAdd" id="analysisFileAdd" accept=".pdf, .jpg, .jpeg, .png">
+                    <div id="currentFileInfo"></div>
                 </div>
             </div>
             <button id="addBtn" class="add">добавить</button>

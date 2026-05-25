@@ -52,6 +52,10 @@ if ($type === 'user') {
     ");
     $stmt->execute([$id]);
     $data = $stmt->fetch(PDO::FETCH_ASSOC);
+} elseif ($type === 'analysis') {
+    $stmt = $pdo->prepare("SELECT analysis_id, user_id, service_id, doctor_id, date, file_name FROM analyzes WHERE analysis_id = ?");
+    $stmt->execute([$id]);
+    $data = $stmt->fetch(PDO::FETCH_ASSOC);
 }
 
 echo json_encode($data);
