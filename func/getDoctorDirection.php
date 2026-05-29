@@ -2,7 +2,7 @@
 session_start();
 require_once '../config.php';
 
-if (!isLogged() || !isDoctor()) {
+if (!isLogged() || !isDoctor() || !isStuff()) {
     echo json_encode(['direction_id' => 0, 'direction_name' => '']);
     exit;
 }

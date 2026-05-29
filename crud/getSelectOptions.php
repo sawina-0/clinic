@@ -39,14 +39,39 @@ if ($type === 'directions') {
         echo '<div class="filter-option" data-value="' . $item['id'] . '">' . htmlspecialchars($item['name']) . '</div>';
     }
 } elseif ($type === 'services') {
-    $stmt = $pdo->query("
-        SELECT service_id as id, name 
-        FROM services 
-        ORDER BY name
-    ");
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($data as $item) {
-        echo '<div class="filter-option" data-value="' . $item['id'] . '">' . htmlspecialchars($item['name']) . '</div>';
+    if (isAdmin()) {
+        $stmt = $pdo->query("SELECT service_id as id, name FROM services ORDER BY name");
+    } elseif (isDoctor() || isStuff()) {
+        // Получаем direction_id текущего пользователя
+        $userId = $_SESSION['user_id'];
+        $stmtDir = $pdo->prepare("SELECT direction_id FROM doctors WHERE user_id = ?");
+        $stmtDir->execute([$userId]);
+        $userDir = $stmtDir->fetchColumn();
+        
+        if (!$userDir) {
+            // Если направление не найдено — пустой результат
+            $stmt = $pdo->query("SELECT service_id as id, name FROM services WHERE 1=0");
+        } else {
+            if (isDoctor()) {
+                // Врач: своё направление + направления персонала (11,12,13)
+                $staffDirections = [11, 12, 13];
+                $allowed = array_merge([$userDir], $staffDirections);
+                $placeholders = implode(',', array_fill(0, count($allowed), '?'));
+                $stmt = $pdo->prepare("SELECT service_id as id, name FROM services WHERE direction_id IN ($placeholders) ORDER BY name");
+                $stmt->execute($allowed);
+            } else { // isStuff()
+                // Персонал: только своё направление
+                $stmt = $pdo->prepare("SELECT service_id as id, name FROM services WHERE direction_id = ? ORDER BY name");
+                $stmt->execute([$userDir]);
+            }
+        }
+    } else {
+        $stmt = $pdo->query("SELECT service_id as id, name FROM services WHERE 1=0");
+    }
+    
+    $services = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($services as $service) {
+        echo '<div class="filter-option" data-value="' . $service['id'] . '">' . htmlspecialchars($service['name']) . '</div>';
     }
 }elseif ($type === 'currentDoctor') {
     //селект врачей для персонала - только себя видит чел

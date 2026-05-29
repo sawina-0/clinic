@@ -584,6 +584,8 @@
             </div>
             <div id="addApps" class="popupContent">
                 <div id="stepDateAdd">
+                    <button type="button" id="showTimeBtnAdd">Выбрать время</button>
+                    <button type="button" id="backToInfoAdd">Вернуться</button>
                     <input type="text" id="dateInput" class="calendar" placeholder="Выберите дату">
                 </div>
                 <div id="stepTimeAdd">
@@ -595,62 +597,66 @@
                         <div class="time-grid"></div>
                     </div>
                 </div>
-                <div class="field">
-                    <span>Пациент:</span>
-                    <div class="custom-select-wrapper">
-                        <div class="custom-select-trigger">
-                            <span>Выберите пациента</span>
-                            <img src="../img/svg/selectArrow.svg" alt="">
-                        </div>
-                        <div class="custom-select-dropdown">
-                            <input type="text" class="search-input" placeholder="Поиск">
-                            <div class="options-container">
-                                
+                <div id="stepInfoAdd">
+                    <button type="button" id="showDateBtnAdd" style="display: none;">Выбрать дату</button>
+                    <small>при смене специалиста не забудьте так же сменить дату и время</small>
+                    <div class="field">
+                        <span>Пациент:</span>
+                        <div class="custom-select-wrapper">
+                            <div class="custom-select-trigger">
+                                <span>Выберите пациента</span>
+                                <img src="../img/svg/selectArrow.svg" alt="">
+                            </div>
+                            <div class="custom-select-dropdown">
+                                <input type="text" class="search-input" placeholder="Поиск">
+                                <div class="options-container">
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="field">
-                    <span>Специалист:</span>
-                    <div class="custom-select-wrapper">
-                        <div class="custom-select-trigger">
-                            <span>Выберите специалиста</span>
-                            <img src="../img/svg/selectArrow.svg" alt="">
-                        </div>
-                        <div class="custom-select-dropdown">
-                            <input type="text" class="search-input" placeholder="Поиск">
-                            <div class="options-container">
-                                
+                    <div class="field">
+                        <span>Специалист:</span>
+                        <div class="custom-select-wrapper">
+                            <div class="custom-select-trigger">
+                                <span>Выберите специалиста</span>
+                                <img src="../img/svg/selectArrow.svg" alt="">
+                            </div>
+                            <div class="custom-select-dropdown">
+                                <input type="text" class="search-input" placeholder="Поиск">
+                                <div class="options-container">
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="field">
-                    <span>Услуга:</span>
-                    <div class="custom-select-wrapper">
-                        <div class="custom-select-trigger">
-                            <span>Выберите услугу</span>
-                            <img src="../img/svg/selectArrow.svg" alt="">
-                        </div>
-                        <div class="custom-select-dropdown">
-                            <input type="text" class="search-input" placeholder="Поиск">
-                            <div class="options-container">
-                                
+                    <div class="field">
+                        <span>Услуга:</span>
+                        <div class="custom-select-wrapper">
+                            <div class="custom-select-trigger">
+                                <span>Выберите услугу</span>
+                                <img src="../img/svg/selectArrow.svg" alt="">
+                            </div>
+                            <div class="custom-select-dropdown">
+                                <input type="text" class="search-input" placeholder="Поиск">
+                                <div class="options-container">
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="field">
-                    <span>Статус:</span>
-                    <div class="custom-select-wrapper">
-                        <div class="custom-select-trigger">
-                            <span>Выберите статус</span>
-                            <img src="../img/svg/selectArrow.svg" alt="">
-                        </div>
-                        <div class="custom-select-dropdown">
-                            <input type="text" class="search-input" placeholder="Поиск">
-                            <div class="options-container">
-                                
+                    <div class="field">
+                        <span>Статус:</span>
+                        <div class="custom-select-wrapper">
+                            <div class="custom-select-trigger">
+                                <span>Выберите статус</span>
+                                <img src="../img/svg/selectArrow.svg" alt="">
+                            </div>
+                            <div class="custom-select-dropdown">
+                                <input type="text" class="search-input" placeholder="Поиск">
+                                <div class="options-container">
+                                    
+                                </div>
                             </div>
                         </div>
                     </div>

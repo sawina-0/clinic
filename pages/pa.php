@@ -43,31 +43,53 @@
         JOIN doctors d ON a.doctor_id = d.doctor_id
         JOIN users u ON d.user_id = u.user_id
         JOIN directions dir ON d.direction_id = dir.direction_id
-        WHERE a.user_id = ? AND a.status = 'запланирован'
+        WHERE a.user_id = ? AND a.status = 'запланирован' AND a.app_datetime >= NOW()
         ORDER BY a.app_datetime ASC
         LIMIT 5
     ");
     $stmt->execute([$_SESSION['user_id']]);
     $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Получаем диагнозы пользователя
+    // Объединяем диагнозы и анализы
+    $history = [];
+
+    // Диагнозы
     $stmt = $pdo->prepare("
-        SELECT 
-            d.date,
-            d.diagnose_text,
-            d.file_name,
-            CONCAT(u.surname, ' ', LEFT(u.name, 1), '.', LEFT(u.sec_name, 1), '.') as doctor_short,
-            dir.specialist_name
+        SELECT 'diagnose' as type, d.date, d.diagnose_text as text, 
+            CONCAT(u.surname, ' ', u.name, ' ', u.sec_name) as doctor_name,
+            d.file_name, d.diagnose_id as id
         FROM diagnose d
         JOIN doctors doc ON d.doctor_id = doc.doctor_id
         JOIN users u ON doc.user_id = u.user_id
-        JOIN directions dir ON doc.direction_id = dir.direction_id
         WHERE d.user_id = ?
-        ORDER BY d.date ASC
-        LIMIT 5
     ");
     $stmt->execute([$_SESSION['user_id']]);
     $diagnoses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Анализы
+    $stmt = $pdo->prepare("
+        SELECT 'analysis' as type, a.date, s.name as text,
+            CONCAT(u.surname, ' ', u.name, ' ', u.sec_name) as doctor_name,
+            a.file_name, a.analysis_id as id
+        FROM analyzes a
+        JOIN services s ON a.service_id = s.service_id
+        JOIN doctors doc ON a.doctor_id = doc.doctor_id
+        JOIN users u ON doc.user_id = u.user_id
+        WHERE a.user_id = ?
+    ");
+    $stmt->execute([$_SESSION['user_id']]);
+    $analyzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Объединяем
+    $history = array_merge($diagnoses, $analyzes);
+
+    // Сортируем по дате (новые первые)
+    usort($history, function($a, $b) {
+        return strtotime($b['date']) - strtotime($a['date']);
+    });
+
+    // Берём первые 5
+    $history = array_slice($history, 0, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -190,37 +212,37 @@
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
+                    <a href="./allAppointments.php" class="commonBtn">Все записи</a>
                 </div>
                 <div class="eCardBlock scroll">
                     <h2>Электронная карта</h2>
                     <div class="eCard">
-                        <?php if (empty($diagnoses)): ?>
+                        <?php if (empty($history)): ?>
                             <div class="emptyState">
                                 <p>История диагнозов пуста</p>
                             </div>
                         <?php else: ?>
-                            <?php foreach ($diagnoses as $diag): ?>
+                            <?php foreach ($history as $item): ?>
                                 <div class="diagnose">
-                                    <span class="date"><?= date('d.m.Y', strtotime($diag['date'])) ?></span>
-                                    <div class="who">
-                                        <p><?= htmlspecialchars($diag['doctor_short']) ?></p>
-                                        <span>(<?= htmlspecialchars($diag['specialist_name']) ?>)</span>
+                                    <div class="head">
+                                        <p class="date"><?= date('d.m.Y', strtotime($item['date'])) ?></p>
+                                        <p class="type"><?= $item['type'] === 'diagnose' ? 'Диагноз' : 'Анализ' ?></p>
                                     </div>
-                                    <div class="dTxt">
-                                        <span>Диагноз:</span>
-                                        <p><?= htmlspecialchars($diag['diagnose_text']) ?></p>
-                                    </div>
+                                    <p class="text"><?= htmlspecialchars($item['text']) ?></p>
+                                    <p class="doctor">Врач: <?= htmlspecialchars($item['doctor_name']) ?></p>
 
-                                    <?php if (!empty($diag['file_name'])): ?>
+                                    <?php if ($item['file_name']): ?>
                                         <div class="file-link">
-                                            <a href="../func/download.php?file=<?= urlencode($diag['file_name']) ?>" target="_blank">
-                                            Смотерть файл</a>
+                                            <a href="../func/download.php?file=<?= urlencode($item['file_name']) ?>" target="_blank">
+                                                Смотреть файл
+                                            </a>
                                         </div>
                                     <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
+                    <a href="./allEC.php" class="commonBtn">Полная карта</a>
                 </div>
             </div>
             <?endif?>

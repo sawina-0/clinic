@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <div class="filter-option" data-value="запланирован">Запланирован</div>
                             <div class="filter-option" data-value="завершён">Завершён</div>
                             <div class="filter-option" data-value="отменён">Отменён</div>
+                            <div class="filter-option" data-value="не явка">Не явка</div>
                         </div>
                     </div>
                 </div>
@@ -187,19 +188,25 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (currentSection === 'appointments') {
             document.getElementById('addApps').style.display = 'flex';
 
-            // Очищаем дату и время
-            const dateInput = document.querySelector('#addApps #dateInput');
-            if (dateInput) dateInput.value = '';
-            const timeGrid = document.querySelector('#addApps .time-grid');
-            if (timeGrid) timeGrid.innerHTML = '';
+            // Очистка полей при открытии
+            document.querySelector('#addApps #dateInput').value = '';
+            document.querySelector('#stepTimeAdd .time-grid').innerHTML = '';
+            if (window.flatpickrInstance) {
+                window.flatpickrInstance.destroy();
+                window.flatpickrInstance = null;
+            }
+            // Скрываем шаги даты и времени, показываем основную информацию
+            const stepDate = document.getElementById('stepDateAdd');
+            const stepTime = document.getElementById('stepTimeAdd');
+            const stepInfo = document.getElementById('stepInfoAdd');
 
-            // Сбрасываем селекты
-            const wrappers = document.querySelectorAll('#addApps .custom-select-wrapper');
-            wrappers.forEach(wrapper => {
-                const triggerSpan = wrapper.querySelector('.custom-select-trigger span');
-                triggerSpan.textContent = 'Выберите';
-                wrapper.dataset.value = '';
-            });
+            stepInfo.style.display = 'flex';
+            stepDate.style.display = 'none';
+            stepTime.style.display = 'none';
+
+            // Кнопка "Изменить дату" неактивна до выбора врача
+            const showDateBtn = document.getElementById('showDateBtnAdd');
+            if (showDateBtn) showDateBtn.style.display = 'none';
 
             let doctorUrl = '../crud/getSelectOptions.php?type=doctors';
             if (window.isDoctor) {
@@ -212,113 +219,195 @@ document.addEventListener('DOMContentLoaded', function () {
             const patientContainer = document.querySelector('#addApps .options-container:first-of-type');
             fetch('../crud/getSelectOptions.php?type=patients')
                 .then(response => response.text())
-                .then(data => {
-                    patientContainer.innerHTML = data;
-                });
+                .then(data => patientContainer.innerHTML = data);
 
             // Загружаем врачей
             const doctorContainer = document.querySelectorAll('#addApps .options-container')[1];
             fetch(doctorUrl)
                 .then(response => response.text())
-                .then(data => {
-                    doctorContainer.innerHTML = data;
-                });
+                .then(data => doctorContainer.innerHTML = data);
 
             // Загружаем услуги
             const serviceContainer = document.querySelectorAll('#addApps .options-container')[2];
             fetch('../crud/getSelectOptions.php?type=services')
                 .then(response => response.text())
-                .then(data => {
-                    serviceContainer.innerHTML = data;
-                });
+                .then(data => serviceContainer.innerHTML = data);
 
             // Статусы
             const statusContainer = document.querySelectorAll('#addApps .options-container')[3];
             statusContainer.innerHTML = `
-                <div class="filter-option" data-value="запланирован">Запланирован</div>
-                <div class="filter-option" data-value="завершён">Завершён</div>
-                <div class="filter-option" data-value="отменён">Отменён</div>
-            `;
+        <div class="filter-option" data-value="запланирован">Запланирован</div>
+        <div class="filter-option" data-value="завершён">Завершён</div>
+        <div class="filter-option" data-value="отменён">Отменён</div>
+        <div class="filter-option" data-value="не явка">Не явка</div>
+    `;
 
-            // Скрываем календарь и время до выбора врача
-            const dateSection = document.querySelector('#addApps #stepDateAdd');
-            const timeSection = document.querySelector('#addApps #stepTimeAdd');
-            if (dateSection) dateSection.style.display = 'none';
-            if (timeSection) timeSection.style.display = 'none';
+            document.querySelectorAll('#addApps .custom-select-wrapper').forEach(wrapper => {
+                const triggerSpan = wrapper.querySelector('.custom-select-trigger span');
+                if (triggerSpan) triggerSpan.textContent = 'Выберите';
+                wrapper.dataset.value = '';
+                const selected = wrapper.querySelector('.filter-option.selected');
+                if (selected) selected.classList.remove('selected');
+            });
 
             if (typeof window.initCustomSelects === 'function') {
                 window.initCustomSelects();
             }
 
-            // Элементы для календаря и времени
+            // ----- ЛОГИКА ВЫБОРА ВРАЧА, ДАТЫ И ВРЕМЕНИ -----
+            // Принудительно показываем кнопку, если врач уже выбран
             const doctorWrapper = document.querySelectorAll('#addApps .custom-select-wrapper')[1];
+            if (doctorWrapper && doctorWrapper.dataset.value) {
+                const showDateBtn = document.getElementById('showDateBtnAdd');
+                if (showDateBtn) showDateBtn.style.display = 'inline-block';
+            }
+            const dateInput = document.querySelector('#stepDateAdd #dateInput');
+            const timeGrid = document.querySelector('#stepTimeAdd .time-grid');
 
             let flatpickrInstance = null;
+            let selectedDoctorId = null;
+            let selectedDate = null;
+            let selectedTime = null;
 
             // Наблюдаем за выбором врача
-            if (doctorWrapper && dateSection) {
+            if (doctorWrapper) {
                 const observer = new MutationObserver(() => {
-                    const doctorId = doctorWrapper.dataset.value;
+                    const newDoctorId = doctorWrapper.dataset.value;
+                    if (newDoctorId === selectedDoctorId) return;
 
-                    if (doctorId) {
-                        dateSection.style.display = 'block';
+                    selectedDoctorId = newDoctorId;
 
-                        // Удаляем старый календарь
-                        if (flatpickrInstance && flatpickrInstance[0]) {
-                            flatpickrInstance[0].destroy();
-                            flatpickrInstance = null;
-                        }
+                    // Сбрасываем дату и время
+                    selectedDate = null;
+                    selectedTime = null;
+                    if (dateInput) dateInput.value = '';
+                    if (timeGrid) timeGrid.innerHTML = '';
 
-                        // Загружаем расписание и создаём календарь
-                        fetch(`../func/getDoctorSchedule.php?doctor_id=${doctorId}`)
-                            .then(response => response.json())
-                            .then(schedule => {
-                                window.doctorSchedule = schedule;
+                    // Прячем блок времени, показываем блок даты (если он был открыт)
+                    stepTime.style.display = 'none';
+                    stepInfo.style.display = 'flex';
+                    stepDate.style.display = 'none';
 
-                                // Создаём новый календарь
-                                flatpickrInstance = window.adminDateTime.initFlatpickr(dateInput, {
-                                    minDate: 'today',
-                                    maxDate: new Date().fp_incr(60),
-                                    disable: [
-                                        function (date) {
-                                            if (!schedule || schedule.length === 0) return true;
-                                            return !schedule.includes(date.getDay());
-                                        }
-                                    ],
-                                    onChange: function (selectedDates, dateStr) {
-                                        if (doctorId && dateStr) {
-                                            const [day, month, year] = dateStr.split('.');
-                                            const dateObj = new Date(year, month - 1, day);
-                                            const dateDisplay = document.querySelector('#addApps .selected-date-display');
-                                            if (dateDisplay) {
-                                                dateDisplay.textContent = dateObj.toLocaleDateString('ru-RU', {
-                                                    weekday: 'short',
-                                                    day: 'numeric',
-                                                    month: 'numeric',
-                                                    year: 'numeric'
-                                                });
-                                            }
-                                            if (dateSection) dateSection.style.display = 'none';
-                                            if (timeSection) timeSection.style.display = 'block';
-                                            document.querySelector('#addApps .time-header')?.addEventListener('click', function () {
-                                                if (dateSection) dateSection.style.display = 'block';
-                                                if (timeSection) timeSection.style.display = 'none';
-                                            });
-                                            window.adminDateTime.initTimeSlots(timeGrid, doctorId, dateStr, (time) => {
-                                                window.selectedTime = time;
-                                                if (timeSection) timeSection.style.display = 'block';
-                                                document.getElementById('addBtn').disabled = false;
-                                            });
-                                        }
-                                    }
-                                });
-                            });
+                    // Показываем кнопку "Изменить дату", если врач выбран
+                    if (selectedDoctorId) {
+                        showDateBtn.style.display = 'inline-block';
                     } else {
-                        dateSection.style.display = 'none';
-                        if (timeSection) timeSection.style.display = 'none';
+                        showDateBtn.style.display = 'none';
                     }
                 });
                 observer.observe(doctorWrapper, { attributes: true, attributeFilter: ['data-value'] });
+            }
+
+            // Клик по кнопке "Изменить дату"
+            if (showDateBtn) {
+                showDateBtn.addEventListener('click', () => {
+                    if (!selectedDoctorId) {
+                        customAlert('Сначала выберите врача');
+                        return;
+                    }
+
+                    stepInfo.style.display = 'none';
+                    stepDate.style.display = 'flex';
+
+                    // Уничтожаем старый календарь
+                    if (flatpickrInstance) {
+                        flatpickrInstance.destroy();
+                        flatpickrInstance = null;
+                    }
+
+                    // Очищаем поле даты и скрываем блок времени
+                    if (dateInput) dateInput.value = '';
+                    stepTime.style.display = 'none';
+
+                    // Загружаем расписание
+                    fetch(`../func/getDoctorSchedule.php?doctor_id=${selectedDoctorId}`)
+                        .then(response => response.json())
+                        .then(schedule => {
+                            flatpickrInstance = flatpickr(dateInput, {
+                                locale: 'ru',
+                                minDate: 'today',
+                                maxDate: new Date().fp_incr(60),
+                                dateFormat: 'd.m.Y',
+                                disable: [
+                                    function (date) {
+                                        if (!schedule || schedule.length === 0) return true;
+                                        return !schedule.includes(date.getDay());
+                                    }
+                                ],
+                                onChange: function (selectedDates, dateStr) {
+                                    selectedDate = dateStr;
+
+                                    // Отображаем дату в шапке времени
+                                    const [day, month, year] = dateStr.split('.');
+                                    const dateObj = new Date(year, month - 1, day);
+                                    const dateDisplay = document.querySelector('#stepTimeAdd .selected-date-display');
+                                    if (dateDisplay) {
+                                        dateDisplay.textContent = dateObj.toLocaleDateString('ru-RU', {
+                                            weekday: 'short',
+                                            day: 'numeric',
+                                            month: 'numeric',
+                                            year: 'numeric'
+                                        });
+                                    }
+
+                                    // Загружаем слоты времени
+                                    fetch(`../func/getFreeTime.php?doctor_id=${selectedDoctorId}&date=${dateStr}`)
+                                        .then(response => response.text())
+                                        .then(data => {
+                                            timeGrid.innerHTML = data;
+                                            stepDate.style.display = 'none';
+                                            stepTime.style.display = 'flex';
+                                        });
+                                }
+                            });
+                        });
+                });
+            }
+
+            // Кнопка "Вернуться" из даты в информацию
+            const backToInfoBtn = document.getElementById('backToInfoAdd');
+            if (backToInfoBtn) {
+                backToInfoBtn.addEventListener('click', () => {
+                    stepDate.style.display = 'none';
+                    stepInfo.style.display = 'flex';
+                });
+            }
+
+            // Кнопка "Изменить время" из даты (если пользователь уже выбрал дату, но хочет поменять время)
+            const showTimeBtn = document.getElementById('showTimeBtnAdd');
+            if (showTimeBtn) {
+                showTimeBtn.addEventListener('click', () => {
+                    if (!selectedDate) {
+                        customAlert('Сначала выберите дату');
+                        return;
+                    }
+                    stepDate.style.display = 'none';
+                    stepTime.style.display = 'flex';
+                });
+            }
+
+            // Возврат из времени в дату по стрелке
+            const backToDateBtn = document.querySelector('#stepTimeAdd .time-header');
+            if (backToDateBtn) {
+                backToDateBtn.addEventListener('click', () => {
+                    stepTime.style.display = 'none';
+                    stepDate.style.display = 'flex';
+                });
+            }
+
+            // Выбор времени (делегирование, т.к. кнопки загружаются динамически)
+            if (timeGrid) {
+                timeGrid.addEventListener('click', (e) => {
+                    const slot = e.target.closest('.time-slot');
+                    if (!slot) return;
+
+                    document.querySelectorAll('#stepTimeAdd .time-slot').forEach(s => s.classList.remove('selected'));
+                    slot.classList.add('selected');
+                    selectedTime = slot.dataset.time;
+
+                    // Активируем кнопку сохранения (но она уже активна, если всё заполнено)
+                    // Сохранение уже отдельно, ничего не делаем
+                });
             }
         } else if (currentSection === 'doctors') {
             document.getElementById('addDoctors').style.display = 'flex';
@@ -1018,6 +1107,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="filter-option" data-value="запланирован">Запланирован</div>
                         <div class="filter-option" data-value="завершён">Завершён</div>
                         <div class="filter-option" data-value="отменён">Отменён</div>
+                        <div class="filter-option" data-value="не явка">Не явка</div>
                     `;
                     const statusOption = Array.from(statusContainer.children).find(opt => opt.dataset.value === app.status);
                     const statusWrapper = document.querySelectorAll('#editApps .custom-select-wrapper')[3];

@@ -70,11 +70,21 @@ foreach ($busySlots as $slot) {
     $busyTimes[] = date('H:i', strtotime($slot));
 }
 
+$now = new DateTime();
+$todayStr = $now->format('Y-m-d');
+$isToday = ($mysqlDate == $todayStr);
+
 // Генерируем кнопки
 while ($start < $end) {
     $time = $start->format('H:i');
     
-    // Если слот свободен И у пользователя нет записи на это время
+    // Если сегодня — пропускаем уже прошедшее время
+    if ($isToday && $start <= $now) {
+        $start->add($interval);
+        continue;
+    }
+    
+    // Дальше твоя проверка на занятые слоты
     if (!in_array($time, $busyTimes) && !in_array($time, $userTimes)) {
         echo "<button class='time-slot' data-time='$time'>$time</button>";
     }

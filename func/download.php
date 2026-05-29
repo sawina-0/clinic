@@ -8,20 +8,32 @@ if (!$file || !isLogged()) {
 }
 
 $userId = $_SESSION['user_id'];
+$allowed = false;
 
-// Проверяем, принадлежит ли файл этому пользователю
+// Проверяем, принадлежит ли файл пользователю через таблицу diagnose
 $stmt = $pdo->prepare("SELECT user_id FROM diagnose WHERE file_name = ?");
 $stmt->execute([$file]);
 $diagnose = $stmt->fetch();
-
-// Доступ разрешён, если:
-// 1. Файл принадлежит текущему пользователю
-// 2. ИЛИ пользователь — админ/врач/персонал
 if ($diagnose && $diagnose['user_id'] == $userId) {
-    // свой файл — можно
-} elseif (isAdmin() || isDoctor() || isStuff()) {
-    // админ/врач/персонал — можно любой
-} else {
+    $allowed = true;
+}
+
+// Проверяем через таблицу analyzes
+if (!$allowed) {
+    $stmt = $pdo->prepare("SELECT user_id FROM analyzes WHERE file_name = ?");
+    $stmt->execute([$file]);
+    $analysis = $stmt->fetch();
+    if ($analysis && $analysis['user_id'] == $userId) {
+        $allowed = true;
+    }
+}
+
+// Если всё равно не разрешено — проверяем роли (админ, врач, персонал)
+if (!$allowed && (isAdmin() || isDoctor() || isStuff())) {
+    $allowed = true;
+}
+
+if (!$allowed) {
     die('Доступ запрещён');
 }
 

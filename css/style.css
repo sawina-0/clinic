@@ -2335,7 +2335,7 @@ select{
     color: var(--green);
 }
 .pa .container .scrolls .appBlock .closestApps{
-    height: calc(100vh - 440px);
+    height: calc(100vh - 500px);
     width: 100%;
     border-radius: 20px;
     padding: 30px;
@@ -2407,8 +2407,14 @@ select{
 .pa .container .scrolls .eCardBlock h2{
     color: var(--brown);
 }
+.pa .container .scrolls .eCardBlock .commonBtn{
+    background-color: var(--brown);
+}
+.pa .container .scrolls .eCardBlock .commonBtn:hover{
+    background-color: var(--cyan);
+}
 .pa .container .scrolls .eCardBlock .eCard{
-    height: calc(100vh - 440px);
+    height: calc(100vh - 500px);
     width: 100%;
     border-radius: 20px;
     padding: 30px;
@@ -2436,16 +2442,17 @@ select{
     font-size: 20px;
     color: var(--brown);
 }
-.diagnose .who, .dTxt{
+.diagnose .head{
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
+    width: 100%;
 }
-.diagnose .dTxt span{
+.diagnose .text{
     color: var(--red);
-    font-weight: 700;
+    font-weight: 600;
 }
 .emptyState{
     width: 100%;
@@ -2473,6 +2480,8 @@ select{
 .file-link a{
     color: var(--brown);
     font-weight: 600;
+    font-size: 16px;
+    text-decoration: underline;
 }
 #cancel-popup h2{
     font-size: 32px;
@@ -2875,23 +2884,23 @@ select{
     width: 100px;
     height: 100px;
 }
-#editApps #stepDateEdit{
+#editApps #stepDateEdit, #stepDateAdd{
     display: flex;
     width: 100%;
     flex-direction: column;
     gap: inherit;
 }
-#editApps #stepTimeEdit{
+#editApps #stepTimeEdit, #stepTimeAdd{
     display: none;
     width: 100%;
 }
-#editApps #stepInfoEdit{
+#editApps #stepInfoEdit, #stepInfoAdd{
     width: 100%;
     display: flex;
     flex-direction: column;
     gap: inherit;
 }
-#showDateBtn, #showTimeBtn, #backToInfo{
+#showDateBtn, #showTimeBtn, #backToInfo, #showDateBtnAdd, #showTimeBtnAdd, #backToInfoAdd{
     font-size: 18px;
     text-decoration: underline;
     color: var(--lightGreen);
@@ -3446,4 +3455,146 @@ input[type="radio"]:checked{
     padding: 5px 10px;
     border-radius: 10px;
     cursor: pointer;
+}
+#allApp{
+    padding-bottom: 50px;
+    margin-top: 120px;
+}
+#allApp .container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+#allApp .container input{
+    outline: none;
+    border-radius: 15px;
+    padding: 10px 15px;
+    background-color: var(--gray);
+    color: var(--brown);
+    font-size: 20px;
+    border: none;
+    background-image: url(../img/svg/loope.svg);
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    width: 100%;
+    z-index: 20;
+}
+#allApp .container h1{
+    color: var(--green);
+}
+#allApp .container .appCards{
+    width: 100%;
+    gap: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#allApp .container .appCards .appCard{
+    width: 100%;
+}
+#allApp .container .appCards .appCard .info{
+    width: 100%;
+}
+#allApp .container .appCards .appCard .who{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+#allApp .container .appCards .appCard .btns button{
+    width: min-content;
+    height: auto;
+    font-size: 18px;
+    color: var(--aboutWhite);
+    width: 100%;
+    border-radius: 10px;
+}
+#allApp .container .appCards .appCard .btns .reschedule{
+    background-color: var(--yellow);
+}
+#allApp .container .appCards .appCard .btns .cancel{
+    background-color: var(--red);
+}
+@media screen and (max-width: 640px) {
+    #allApp{
+        margin-top: 100px;
+    }
+    #allApp .container{
+        gap: 20px;
+    }
+    #allApp .container h1{
+        font-size: 24px;
+    }
+    #allApp .container .appCards .appCard{
+        flex-direction: column;
+        gap: 10px;
+    }
+    #allApp .container .appCards .appCard .btns{
+        flex-direction: row;
+        width: 100%;
+    }
+}
+#ec{
+    padding-bottom: 50px;
+    margin-top: 120px;
+}
+#ec .container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+#ec .container h1{
+    color: var(--green);
+}
+#ec .container .filters{
+    gap: 10px;
+}
+#ec .container input{
+    outline: none;
+    border-radius: 15px;
+    padding: 10px 15px;
+    background-color: var(--gray);
+    color: var(--brown);
+    font-size: 20px;
+    border: none;
+    background-image: url(../img/svg/loope.svg);
+    background-repeat: no-repeat;
+    background-position: right 20px center;
+    width: 100%;
+    z-index: 20;
+}
+#ec .container .ecList{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+#ec .container .ecList .ecCard{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+#ec .container .ecList .ecCard .head{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+@media screen and (max-width: 640px) {
+    #ec{
+        margin-top: 100px;
+    }
+    #ec .container{
+        gap: 20px;
+    }
+    #ec .container h1{
+        font-size: 24px;
+    }
 }

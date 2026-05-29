@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Переключение между блоками
+    // // Переключение между блоками
     const changeBtn = document.getElementById('changeBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const viewBlock = document.getElementById('viewBlock');
@@ -167,11 +167,12 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentCancelId = null;
 
     // Открытие попапа с сохранением ID
-    document.querySelectorAll('.cancel').forEach(btn => {
-        btn.addEventListener('click', function () {
-            currentCancelId = this.dataset.id;
+    document.addEventListener('click', function (e) {
+        const cancelBtn = e.target.closest('.cancel');
+        if (cancelBtn) {
+            currentCancelId = cancelBtn.dataset.id;
             showPopup('cancel-popup');
-        });
+        }
     });
 
     // Обработчик подтверждения (на кнопку с ID)
@@ -211,24 +212,24 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
 
                     if (foundBtn) {
-                        const card = foundBtn.closest('.app');
+                        const card = foundBtn.closest('.appCard, .app');
                         if (card) {
                             card.remove();
 
-                            // Если записей больше нет — показываем заглушку
                             const container = document.querySelector('.closestApps');
-                            if (container.children.length === 0) {
+                            if (container && container.children.length === 0) {
                                 container.innerHTML = `
-                                <div class="emptyState">
-                                    <p>У вас нет предстоящих записей</p>
-                                    <a href="./services.php" class="commonBtn">Записаться на приём</a>
-                                </div>
-                            `;
+                        <div class="emptyState">
+                            <p>У вас нет предстоящих записей</p>
+                            <a href="./services.php" class="commonBtn">Записаться на приём</a>
+                        </div>
+                    `;
                             }
                         }
                     }
 
                     currentCancelId = null;
+                    return; // ✅ ВАЖНО: выходим, чтобы не попасть в catch
                 } else {
                     customAlert(result.message);
                 }
@@ -239,132 +240,135 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     let rescheduleId = null;
 
-    document.querySelectorAll('.reschedule').forEach(btn => {
-        btn.addEventListener('click', async function () {
-            console.log('Клик по переносу, ID =', this.dataset.id);
-            rescheduleId = this.dataset.id;
+    // Перенос записи (делегирование)
+    document.addEventListener('click', async function (e) {
+        const rescheduleBtn = e.target.closest('.reschedule');
+        if (!rescheduleBtn) return;
 
-            // Получаем данные текущей записи
-            const response = await fetch(`../func/getAppointment.php?id=${rescheduleId}`);
-            const data = await response.json();
+        const rescheduleId = rescheduleBtn.dataset.id;
+        console.log('Клик по переносу, ID =', rescheduleId);
 
-            // Сохраняем данные в локальные переменные
-            const doctor = {
-                id: data.doctor_id,
-                name: data.doctor_name,
-                photo: data.doctor_photo
-            };
-            const service = {
-                id: data.service_id,
-                name: data.service_name,
-                price: data.service_price
-            };
-            const schedule = data.schedule;
+        // Получаем данные текущей записи
+        const response = await fetch(`../func/getAppointment.php?id=${rescheduleId}`);
+        const data = await response.json();
 
-            // Показываем шаг с датой и скрываем время
-            document.querySelector('#reschedule-popup #stepDate').style.display = 'flex';
-            document.querySelector('#reschedule-popup #stepTime').style.display = 'none';
-            document.querySelector('#reschedule-popup #stepDate').style.visibility = 'visible';
-            document.querySelector('#reschedule-popup #stepTime').style.visibility = 'hidden';
+        // Сохраняем данные в локальные переменные
+        const doctor = {
+            id: data.doctor_id,
+            name: data.doctor_name,
+            photo: data.doctor_photo
+        };
+        const service = {
+            id: data.service_id,
+            name: data.service_name,
+            price: data.service_price
+        };
+        const schedule = data.schedule;
 
-            // Заполняем шапку
-            const stepDate = document.querySelector('#reschedule-popup #stepDate');
-            const dateDataBlock = stepDate.querySelector('.data');
-            dateDataBlock.innerHTML = `
-            <img src="../img/avatars/${doctor.photo || 'none.svg'}" alt="">
-            <div class="vert">
-                <p>${doctor.name}</p>
-                <p>${service.name}</p>
-                <p>${service.price} ₽</p>
-            </div>
-        `;
+        // Показываем шаг с датой и скрываем время
+        document.querySelector('#reschedule-popup #stepDate').style.display = 'flex';
+        document.querySelector('#reschedule-popup #stepTime').style.display = 'none';
+        document.querySelector('#reschedule-popup #stepDate').style.visibility = 'visible';
+        document.querySelector('#reschedule-popup #stepTime').style.visibility = 'hidden';
 
-            // Инициализируем flatpickr и сохраняем в переменную
-            const fp = flatpickr('#reschedule-popup #dateInput', {
-                locale: 'ru',
-                minDate: 'today',
-                maxDate: new Date().fp_incr(60),
-                dateFormat: 'd.m.Y',
-                disable: [function (date) {
-                    if (!schedule || schedule.length === 0) return true;
-                    return !schedule.includes(date.getDay());
-                }],
-                onChange: function (selectedDates, dateStr) {
-                    document.querySelector('#reschedule-popup #madeAppDate').disabled = false;
-                    window.rescheduleDate = dateStr;
-                }
-            });
+        // Заполняем шапку
+        const stepDate = document.querySelector('#reschedule-popup #stepDate');
+        const dateDataBlock = stepDate.querySelector('.data');
+        dateDataBlock.innerHTML = `
+        <img src="../img/avatars/${doctor.photo || 'none.svg'}" alt="">
+        <div class="vert">
+            <p>${doctor.name}</p>
+            <p>${service.name}</p>
+            <p>${service.price} ₽</p>
+        </div>
+    `;
 
-            // Устанавливаем текущую дату
-            const currentDate = new Date(data.app_datetime);
-            fp.setDate(currentDate, true);
-
-            // Переход на шаг времени
-            document.querySelector('#reschedule-popup #madeAppDate').onclick = function () {
-                document.querySelector('#reschedule-popup #stepDate').style.display = 'none';
-                document.querySelector('#reschedule-popup #stepTime').style.display = 'flex';
-                document.querySelector('#reschedule-popup #stepDate').style.visibility = 'hidden';
-                document.querySelector('#reschedule-popup #stepTime').style.visibility = 'visible';
-
-                const [day, month, year] = window.rescheduleDate.split('.');
-                const dateObj = new Date(year, month - 1, day);
-                document.querySelector('#reschedule-popup .selected-date-display').textContent =
-                    dateObj.toLocaleDateString('ru-RU', {
-                        weekday: 'short',
-                        day: 'numeric',
-                        month: 'numeric',
-                        year: 'numeric'
-                    });
-
-                fetch(`../func/getFreeTime.php?doctor_id=${doctor.id}&date=${window.rescheduleDate}`)
-                    .then(response => response.text())
-                    .then(data => {
-                        document.querySelector('#reschedule-popup .time-grid').innerHTML = data;
-                    });
-            };
-
-            // Выбор времени
-            document.querySelector('#reschedule-popup .time').onclick = function (e) {
-                const slot = e.target.closest('.time-slot');
-                if (!slot) return;
-
-                document.querySelectorAll('#reschedule-popup .time-slot').forEach(s => s.classList.remove('selected'));
-                slot.classList.add('selected');
-                window.rescheduleTime = slot.dataset.time;
-                document.querySelector('#reschedule-popup #madeAppReschedule').disabled = false;
-            };
-            // Возврат на шаг даты
-            document.querySelector('#reschedule-popup .time-header').onclick = function () {
-                document.querySelector('#reschedule-popup #stepTime').style.display = 'none';
-                document.querySelector('#reschedule-popup #stepDate').style.display = 'flex';
-                document.querySelector('#reschedule-popup #stepTime').style.visibility = 'hidden';
-                document.querySelector('#reschedule-popup #stepDate').style.visibility = 'visible';
-            };
-            // Отправка
-            document.querySelector('#reschedule-popup #madeAppReschedule').onclick = function () {
-                fetch('../func/rescheduleAppointment.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        appointment_id: rescheduleId,
-                        date: window.rescheduleDate,
-                        time: window.rescheduleTime
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            customAlert('Запись перенесена');
-                            hidePopup('reschedule-popup');
-                            location.reload();
-                        } else {
-                            customAlert(data.message);
-                        }
-                    });
-            };
-
-            showPopup('reschedule-popup');
+        // Инициализируем flatpickr
+        const fp = flatpickr('#reschedule-popup #dateInput', {
+            locale: 'ru',
+            minDate: 'today',
+            maxDate: new Date().fp_incr(60),
+            dateFormat: 'd.m.Y',
+            disable: [function (date) {
+                if (!schedule || schedule.length === 0) return true;
+                return !schedule.includes(date.getDay());
+            }],
+            onChange: function (selectedDates, dateStr) {
+                document.querySelector('#reschedule-popup #madeAppDate').disabled = false;
+                window.rescheduleDate = dateStr;
+            }
         });
+
+        // Устанавливаем текущую дату
+        const currentDate = new Date(data.app_datetime);
+        fp.setDate(currentDate, true);
+
+        // Переход на шаг времени
+        document.querySelector('#reschedule-popup #madeAppDate').onclick = function () {
+            document.querySelector('#reschedule-popup #stepDate').style.display = 'none';
+            document.querySelector('#reschedule-popup #stepTime').style.display = 'flex';
+            document.querySelector('#reschedule-popup #stepDate').style.visibility = 'hidden';
+            document.querySelector('#reschedule-popup #stepTime').style.visibility = 'visible';
+
+            const [day, month, year] = window.rescheduleDate.split('.');
+            const dateObj = new Date(year, month - 1, day);
+            document.querySelector('#reschedule-popup .selected-date-display').textContent =
+                dateObj.toLocaleDateString('ru-RU', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'numeric',
+                    year: 'numeric'
+                });
+
+            fetch(`../func/getFreeTime.php?doctor_id=${doctor.id}&date=${window.rescheduleDate}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.querySelector('#reschedule-popup .time-grid').innerHTML = data;
+                });
+        };
+
+        // Выбор времени
+        document.querySelector('#reschedule-popup .time').onclick = function (e) {
+            const slot = e.target.closest('.time-slot');
+            if (!slot) return;
+
+            document.querySelectorAll('#reschedule-popup .time-slot').forEach(s => s.classList.remove('selected'));
+            slot.classList.add('selected');
+            window.rescheduleTime = slot.dataset.time;
+            document.querySelector('#reschedule-popup #madeAppReschedule').disabled = false;
+        };
+
+        // Возврат на шаг даты
+        document.querySelector('#reschedule-popup .time-header').onclick = function () {
+            document.querySelector('#reschedule-popup #stepTime').style.display = 'none';
+            document.querySelector('#reschedule-popup #stepDate').style.display = 'flex';
+            document.querySelector('#reschedule-popup #stepTime').style.visibility = 'hidden';
+            document.querySelector('#reschedule-popup #stepDate').style.visibility = 'visible';
+        };
+
+        // Отправка
+        document.querySelector('#reschedule-popup #madeAppReschedule').onclick = function () {
+            fetch('../func/rescheduleAppointment.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    appointment_id: rescheduleId,
+                    date: window.rescheduleDate,
+                    time: window.rescheduleTime
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        hidePopup('reschedule-popup');
+                        location.reload();
+                    } else {
+                        customAlert(data.message);
+                    }
+                });
+        };
+
+        showPopup('reschedule-popup');
     });
     // === УДАЛЕНИЕ АВАТАРКИ ===
     setTimeout(() => {
