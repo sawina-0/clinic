@@ -3013,7 +3013,7 @@ input[type="radio"]:checked{
     gap: 30px;
 }
 .card>img{
-    width: 100px;
+    min-width: 100px;
     height: 100px;
     border-radius: 100px;
 }
@@ -3033,10 +3033,15 @@ input[type="radio"]:checked{
     align-items: flex-start;
     width: 100%;
 }
-.card .info p{
+.card .info p, .patient-history-link{
     font-size: 20px;
     color: var(--brown);
     flex-wrap: wrap;
+}
+.patient-history-link{
+    color: var(--lightGreen);
+    cursor: pointer;
+    font-weight: 700;
 }
 .card .btns{
     display: flex;
@@ -3098,7 +3103,7 @@ input[type="radio"]:checked{
     color: var(--lightGreen);
     font-weight: 700;
 }
-.diagnoseCard a{
+.diagnoseCard a, .ec-file a{
     color: var(--lightGreen);
     font-weight: 700;
     word-break: break-word;
@@ -3149,7 +3154,7 @@ input[type="radio"]:checked{
         font-size: 18px;
     }
     .card>img{
-        width: 70px;
+        min-width: 70px;
         height: 70px;
     }
 
@@ -3419,7 +3424,7 @@ input[type="radio"]:checked{
         max-width: fit-content;
     }
 }
-.custom-alert {
+.custom-alert, .custom-confirm {
     position: fixed;
     top: 0;
     left: 0;
@@ -3431,7 +3436,7 @@ input[type="radio"]:checked{
     justify-content: center;
     z-index: 9999;
 }
-.custom-alert-content {
+.custom-alert-content,  .custom-confirm-content{
     background: var(--aboutWhite);
     padding: 20px;
     border-radius: 20px;
@@ -3442,19 +3447,27 @@ input[type="radio"]:checked{
     gap: 10px;
     border: var(--lightGreen) 3px solid;
 }
-.custom-alert-content p{
+.custom-alert-content p, .custom-confirm-content p{
     font-size: 18px;
     color: var(--brown);
     width: 100%;
     text-align: center;
 }
-.custom-alert-content button{
+.custom-alert-content button, #confirmYes, #confirmNo{
     font-size: 16px;
     background-color: var(--lightGreen);
     color: var(--aboutWhite);
     padding: 5px 10px;
     border-radius: 10px;
     cursor: pointer;
+}
+.custom-confirm-content .confirm-buttons{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.custom-confirm-content #confirmNo{
+    background-color: var(--red);
 }
 #allApp{
     padding-bottom: 50px;
@@ -3572,13 +3585,13 @@ input[type="radio"]:checked{
     flex-direction: column;
     gap: 15px;
 }
-#ec .container .ecList .ecCard{
+.ecCard{
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
 }
-#ec .container .ecList .ecCard .head{
+.ecCard .head{
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -3596,5 +3609,33 @@ input[type="radio"]:checked{
     }
     #ec .container h1{
         font-size: 24px;
+    }
+}
+.history-header{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    justify-content: space-between;
+    height: 100%;
+    padding-top: 10px;
+}
+.history-header #backToAdmin{
+    font-size: 18px;
+    color: var(--green);
+    cursor: pointer;
+}
+.history-header h2{
+    font-size: 20px;
+    color: var(--brown);
+    font-family: 'Comfortaa';
+    font-weight: 700;
+}
+.history-item{
+    flex-direction: column;
+}
+@media screen and (max-width: 400px) {
+    #historySearch::placeholder{
+        font-size: 16px;
     }
 }

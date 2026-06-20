@@ -376,29 +376,30 @@ document.addEventListener('DOMContentLoaded', function () {
         if (deleteBtn) {
             deleteBtn.addEventListener('click', async function (e) {
                 e.preventDefault();
-                if (!confirm('Удалить фото?')) return;
 
-                const formData = new FormData();
-                formData.append('delete_photo', '1');
+                customConfirm('Удалить фото?', async () => {
+                    const formData = new FormData();
+                    formData.append('delete_photo', '1');
 
-                try {
-                    const response = await fetch('../func/updateProfile.php', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const result = await response.json();
+                    try {
+                        const response = await fetch('../func/updateProfile.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
 
-                    if (result.success) {
-                        document.getElementById('profilePhoto').src = '../img/avatars/none.svg';
-                        document.getElementById('editPhoto').src = '../img/avatars/none.svg';
-                        deleteBtn.remove();
-                        customAlert('Фото удалено');
-                    } else {
-                        customAlert(result.message);
+                        if (result.success) {
+                            document.getElementById('profilePhoto').src = '../img/avatars/none.svg?t=' + Date.now();
+                            document.getElementById('editPhoto').src = '../img/avatars/none.svg?t=' + Date.now();
+                            deleteBtn.remove();
+                            customAlert('Фото удалено');
+                        } else {
+                            customAlert(result.message);
+                        }
+                    } catch (error) {
+                        customAlert('Ошибка при удалении');
                     }
-                } catch (error) {
-                    customAlert('Ошибка при удалении');
-                }
+                });
             });
         }
     }, 200);

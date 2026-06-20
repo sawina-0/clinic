@@ -11,8 +11,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const section = this.dataset.section;
             if (!section) return;
 
+            const topContainer = document.querySelector('.top');
+            topContainer.innerHTML = `<div class="filters"></div><button class="commonBtn">добавить</button>`;
+
             tabs.forEach(t => t.classList.remove('selected'));
             this.classList.add('selected');
+
 
             currentSection = section;
             loadSection(section);
@@ -44,8 +48,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateFilters(section) {
-        let filterHtml = '';
+
+        const topContainer = document.querySelector('.top');
+        const filterContainer = document.querySelector('.filters');
+
+
+
+        // Очищаем только контейнер фильтров, а не весь .top
         filterContainer.innerHTML = '';
+
+        let filterHtml = '';
+
 
         if (section === 'users') {
             filterHtml = `
@@ -1877,28 +1890,27 @@ document.addEventListener('DOMContentLoaded', function () {
         const userId = document.querySelector('#edit-popup').dataset.userId;
         if (!userId) return;
 
-        if (!confirm('Удалить фото?')) return;
+        customConfirm('Удалить фото?', async () => {
+            const formData = new FormData();
+            formData.append('delete_photo', '1');
+            formData.append('user_id', userId);
 
-        const formData = new FormData();
-        formData.append('delete_photo', '1');
-        formData.append('user_id', userId);
+            const response = await fetch('../crud/updateUser.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
 
-        const response = await fetch('../crud/updateUser.php', {
-            method: 'POST',
-            body: formData
+            if (result.success) {
+                const newSrc = '../img/avatars/none.svg?t=' + Date.now();
+                document.querySelector('#editUsers img').src = newSrc;
+                document.getElementById('deleteUserAvatarBtn').style.display = 'none';
+                customAlert('Фото удалено');
+                loadSection('users');
+            } else {
+                customAlert(result.message);
+            }
         });
-        const result = await response.json();
-
-        if (result.success) {
-            const newSrc = '../img/avatars/none.svg?';
-            document.querySelector('#editUsers img').src = newSrc;
-            document.getElementById('deleteUserAvatarBtn').style.display = 'none';
-            customAlert('Фото удалено');
-            // Можно обновить карточку в списке, но проще — перезагрузить секцию
-            loadSection('users');
-        } else {
-            customAlert(result.message);
-        }
     });
 
     // Единый обработчик для кнопок удаления
@@ -2073,4 +2085,111 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('stepDateEdit').style.display = 'flex';
         });
     }
+
+    //history of patient
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('.patient-history-link');
+        if (!link) return;
+
+        e.preventDefault();
+        const patientId = link.dataset.patientId;
+        const patientName = link.textContent.trim();
+
+        // Скрываем лишнее
+        const addBtn = document.querySelector('.top .commonBtn');
+        const filters = document.querySelector('.top .filters');
+        if (addBtn) addBtn.style.display = 'none';
+        if (filters) filters.style.display = 'none';
+
+        // Сохраняем текущую секцию, чтобы можно было вернуться
+        const currentSection = document.querySelector('.tabBtn.selected')?.dataset.section || 'appointments';
+        document.querySelector('#adminPanel').dataset.returnSection = currentSection;
+
+        // Сбрасываем выделение со всех вкладок
+        document.querySelectorAll('.tabBtn').forEach(t => t.classList.remove('selected'));
+
+        const cardContainer = document.querySelector('.cardContent');
+
+        const topContainer = document.querySelector('.top');
+        const tempHtml = topContainer.innerHTML;
+
+        // Заполняем .top
+        topContainer.innerHTML = `
+            <div class="history-header">
+                <button id="backToAdmin" class="back-btn">Назад</button>
+                <h2>${patientName}</h2>
+            </div>
+            <div class="filters">
+                <div class="custom-select-wrapper">
+                    <div class="custom-select-trigger">
+                        <span>Всё</span>
+                        <img src="../img/svg/selectArrow.svg" alt="">
+                    </div>
+                    <div class="custom-select-dropdown">
+                        <div class="options-container">
+                            <div class="filter-option" data-value="all">Всё</div>
+                            <div class="filter-option" data-value="diagnose">Только диагнозы</div>
+                            <div class="filter-option" data-value="analysis">Только анализы</div>
+                        </div>
+                    </div>
+                </div>
+                <input type="text" id="historySearch" placeholder="Поиск по тексту или врачу...">
+            </div>
+        `;
+
+        // Очищаем .cardContent и загружаем историю
+        cardContainer.innerHTML = '';
+        loadPatientHistory(patientId, 'all', '');
+
+        // Навешиваем обработчики фильтров
+        const filterWrapper = document.querySelector('.top .custom-select-wrapper');
+        const searchInput = document.querySelector('.top #historySearch');
+        const backBtn = container.querySelector('#backToAdmin');
+
+        if (filterWrapper) {
+            filterWrapper.addEventListener('click', function (ev) {
+                const option = ev.target.closest('.filter-option');
+                if (option) {
+                    setTimeout(() => {
+                        const type = filterWrapper.dataset.value || 'all';
+                        loadPatientHistory(patientId, type, searchInput?.value || '');
+                    }, 50);
+                }
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const type = filterWrapper?.dataset.value || 'all';
+                loadPatientHistory(patientId, type, this.value);
+            });
+        }
+
+        document.querySelector('#backToAdmin').addEventListener('click', function () {
+            // Удаляем историю из .top
+            const topContainer = document.querySelector('.top');
+            topContainer.innerHTML = `<div class="filters"></div><button class="commonBtn">добавить</button>`;
+
+            const returnSection = document.querySelector('#adminPanel').dataset.returnSection || 'appointments';
+
+            document.querySelectorAll('.tabBtn').forEach(t => {
+                t.classList.remove('selected');
+                if (t.dataset.section === returnSection) {
+                    t.classList.add('selected');
+                }
+            });
+
+            loadSection(returnSection);
+        });
+
+        function loadPatientHistory(patientId, type, search) {
+            const container = document.querySelector('.cardContent');
+            if (!container) return;
+            fetch(`../crud/getPatientHistory.php?patient_id=${patientId}&filter=${encodeURIComponent(type)}&search=${encodeURIComponent(search)}`)
+                .then(response => response.text())
+                .then(data => {
+                    container.innerHTML = data;
+                });
+        }
+    });
 });

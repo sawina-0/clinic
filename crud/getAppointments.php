@@ -12,6 +12,7 @@ $search = isset($_GET['search']) ? $_GET['search'] : '';
 
 $sql = "SELECT 
             a.appointment_id,
+            a.user_id, 
             a.app_datetime,
             a.status,
             s.name as service_name,
@@ -65,7 +66,9 @@ foreach ($apps as $app):
                 <p><?= $date->format('d.m.Y') ?></p>
                 <p><?= $date->format('H:i') ?></p>
             </div>
-            <p>Пациент: <?= htmlspecialchars($app['patient_short']) ?></p>
+            <a href="#" class="patient-history-link" data-patient-id="<?= $app['user_id'] ?>">
+                Пациент: <?= htmlspecialchars($app['patient_short']) ?>
+            </a>
             <p>Врач: <?= htmlspecialchars($app['doctor_short']) ?></p>
             <p>Услуга: <?= htmlspecialchars($app['service_name']) ?></p>
             <p>Кабинет № <?= (int)$app['cabinet_number'] ?></p>
