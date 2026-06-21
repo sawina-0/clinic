@@ -28,7 +28,7 @@ $stmt = $pdo->prepare("
         CONCAT(u.surname, ' ', u.name, ' ', u.sec_name) AS full_name
     FROM doctors d
     JOIN users u ON d.user_id = u.user_id
-    WHERE d.direction_id = ?
+    WHERE d.direction_id = ? AND u.role IN ('Доктор', 'Персонал')
 ");
 $stmt->execute([$direction_id]);
 $doctors = $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -73,6 +73,9 @@ button{
     border: none;
     background: transparent;
 }
+input[type="submit"]{
+    border: none;
+}
 ul{
     list-style: none;
 }

@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!section) return;
 
             const topContainer = document.querySelector('.top');
-            topContainer.innerHTML = `<div class="filters"></div><button class="commonBtn">добавить</button>`;
+            // topContainer.innerHTML = `<div class="filters"></div><button class="commonBtn">добавить</button>`;
+            topContainer.innerHTML = `<div class="filters"></div>`;
 
             tabs.forEach(t => t.classList.remove('selected'));
             this.classList.add('selected');
@@ -57,8 +58,22 @@ document.addEventListener('DOMContentLoaded', function () {
         // Очищаем только контейнер фильтров, а не весь .top
         filterContainer.innerHTML = '';
 
-        let filterHtml = '';
+        // Удаляем старую кнопку, если есть
+        const oldBtn = topContainer.querySelector('.commonBtn');
+        if (oldBtn) oldBtn.remove();
 
+        // Добавляем новую кнопку, если нужна
+        if (section !== 'users' && section !== 'doctorSchedule') {
+            const btn = document.createElement('button');
+            btn.className = 'commonBtn';
+            btn.textContent = 'добавить';
+            topContainer.appendChild(btn);
+        }
+
+        let filterHtml = '';
+        if (section !== 'users' && section !== 'doctorSchedule') {
+            filterHtml += '<button class="commonBtn">добавить</button>';
+        }
 
         if (section === 'users') {
             filterHtml = `
@@ -159,7 +174,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Открытие попапа добавления
-    addBtn.addEventListener('click', function () {
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.top .commonBtn');
+        if (!btn) return;
         // Показываем попап
         showPopup('add-popup');
 

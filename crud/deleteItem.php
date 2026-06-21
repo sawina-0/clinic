@@ -88,10 +88,6 @@ try {
         $stmt->execute([$id]);
         $user_id = $stmt->fetchColumn();
         
-        // Удаляем врача
-        $stmt = $pdo->prepare("DELETE FROM doctors WHERE doctor_id = ?");
-        $stmt->execute([$id]);
-        
         // Меняем роль пользователя на "Пользователь"
         if ($user_id) {
             $stmt = $pdo->prepare("UPDATE users SET role = 'Пользователь' WHERE user_id = ?");

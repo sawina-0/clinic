@@ -68,14 +68,6 @@ if ($_SERVER['CONTENT_TYPE'] === 'application/json') {
             echo json_encode(['success' => false, 'message' => 'Чтобы сделать врача/персонал, используйте раздел "Врачи"']);
             exit;
         }
-        if (in_array($oldRole, ['Доктор', 'Персонал']) && $role === 'Пользователь') {
-            $stmt = $pdo->prepare("DELETE FROM doctors WHERE user_id = ?");
-            $stmt->execute([$user_id]);
-        }
-        if (in_array($oldRole, ['Доктор', 'Персонал']) && in_array($role, ['Пользователь', 'Администратор', 'Заблокирован'])) {
-            $stmt = $pdo->prepare("DELETE FROM doctors WHERE user_id = ?");
-            $stmt->execute([$user_id]);
-        }
     }
 
     // Очищаем телефон

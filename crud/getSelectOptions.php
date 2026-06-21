@@ -110,7 +110,7 @@ if ($type === 'directions') {
     $stmt = $pdo->prepare("
         SELECT user_id as id, CONCAT(surname, ' ', name, ' ', sec_name) as name
         FROM users
-        WHERE role NOT IN ('Доктор', 'Персонал', 'Администратор')
+        WHERE role NOT IN ('Доктор', 'Персонал', 'Администратор', 'Заблокирован')
         ORDER BY surname
     ");
     $stmt->execute();
