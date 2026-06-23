@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function loadSection(section) {
         updateFilters(section);
 
-        if (section === 'users' || section === 'doctorSchedule') {
+        if (section === 'users' || section === 'doctorSchedule' || section === 'doctorDetails') {
             addBtn.style.display = 'none';
         } else {
             addBtn.style.display = 'block';
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (oldBtn) oldBtn.remove();
 
         // Добавляем новую кнопку, если нужна
-        if (section !== 'users' && section !== 'doctorSchedule') {
+        if (section !== 'users' && section !== 'doctorSchedule' && section !== 'doctorDetails') {
             const btn = document.createElement('button');
             btn.className = 'commonBtn';
             btn.textContent = 'добавить';
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         let filterHtml = '';
-        if (section !== 'users' && section !== 'doctorSchedule') {
+        if (section !== 'users' && section !== 'doctorSchedule' && section !== 'doctorDetails') {
             filterHtml += '<button class="commonBtn">добавить</button>';
         }
 
@@ -601,6 +601,17 @@ document.addEventListener('DOMContentLoaded', function () {
             if (typeof window.initCustomSelects === 'function') {
                 window.initCustomSelects();
             }
+        } else if (currentSection === 'doctorDetails') {
+            document.getElementById('addDetail').style.display = 'flex';
+            // Очищаем поля
+            document.getElementById('educAdd').value = '';
+            document.getElementById('qualAdd').value = '';
+            document.getElementById('awAdd').value = '';
+            // Показываем стартовый шаг
+            document.querySelector('#addDetail .stepStartAdd').style.display = 'flex';
+            document.querySelector('#addDetail .stepEducAdd').style.display = 'none';
+            document.querySelector('#addDetail .stepQualAdd').style.display = 'none';
+            document.querySelector('#addDetail .stepAwAdd').style.display = 'none';
         }
     });
     //расписание
@@ -621,6 +632,32 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelector('#addSchedule #fullName').textContent = doctorName;
         document.querySelector('#addSchedule').dataset.doctorId = doctorId;
         document.querySelectorAll('#addSchedule .cb input').forEach(cb => cb.checked = false);
+
+        showPopup('add-popup');
+    });
+    //детали
+    document.addEventListener('click', function (e) {
+        const addBtn = e.target.closest('.doctorDetailCard .addDetailBtn');
+        if (!addBtn) return;
+
+        const card = addBtn.closest('.doctorDetailCard');
+        const doctorId = card.dataset.id;
+        const doctorName = card.querySelector('.info p:first-child').textContent;
+
+        // Сохраняем ID врача в модалке
+        document.querySelector('#addDetail').dataset.doctorId = doctorId;
+        document.querySelector('#addDetail .doctorFio').textContent = doctorName;
+
+        // Показываем стартовый шаг
+        document.querySelector('#addDetail .stepStartAdd').style.display = 'flex';
+        document.querySelector('#addDetail .stepEducAdd').style.display = 'none';
+        document.querySelector('#addDetail .stepQualAdd').style.display = 'none';
+        document.querySelector('#addDetail .stepAwAdd').style.display = 'none';
+
+        // Очищаем поля
+        document.getElementById('educAdd').value = '';
+        document.getElementById('qualAdd').value = '';
+        document.getElementById('awAdd').value = '';
 
         showPopup('add-popup');
     });
@@ -878,6 +915,42 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (result.success) {
                 customAlert('Анализ добавлен');
+                hidePopup('add-popup');
+                loadSection(currentSection);
+            } else {
+                customAlert(result.message);
+            }
+        }//сохранение деталей
+        else if (currentSection === 'doctorDetails') {
+            const doctorId = document.querySelector('#addDetail').dataset.doctorId;
+            if (!doctorId) {
+                customAlert('Ошибка: не выбран врач');
+                return;
+            }
+
+            const education = document.getElementById('educAdd').value.trim();
+            const qualification = document.getElementById('qualAdd').value.trim();
+            const awards = document.getElementById('awAdd').value.trim();
+
+            if (!education) {
+                customAlert('Укажите образование');
+                return;
+            }
+
+            const response = await fetch('../crud/addDoctorDetail.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    doctor_id: doctorId,
+                    education: education,
+                    qualification: qualification,
+                    awards: awards
+                })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                customAlert('Детали добавлены');
                 hidePopup('add-popup');
                 loadSection(currentSection);
             } else {
@@ -1509,6 +1582,47 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             return;
         }
+
+        //10. Детали
+        const doctorDetailEdit = e.target.closest('.doctorDetailCard .editBtn');
+        if (doctorDetailEdit) {
+            e.preventDefault();
+
+            document.querySelectorAll('#edit-popup .popupContent').forEach(block => {
+                block.style.display = 'none';
+            });
+            document.getElementById('editDetail').style.display = 'flex';
+
+            const card = doctorDetailEdit.closest('.doctorDetailCard');
+            const doctorId = card.dataset.id;
+            const doctorName = card.querySelector('.info p:first-child').textContent;
+
+            // Загружаем данные
+            fetch(`../crud/getItem.php?type=doctorDetail&id=${doctorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || !data.dd_id) {
+                        customAlert('Ошибка загрузки данных');
+                        return;
+                    }
+
+                    document.querySelector('#editDetail').dataset.doctorId = doctorId;
+                    document.querySelector('#editDetail .doctorFio').textContent = doctorName;
+
+                    document.getElementById('educEdit').value = data.education || '';
+                    document.getElementById('qualEdit').value = data.qualification || '';
+                    document.getElementById('awEdit').value = data.awards || '';
+
+                    // Показываем стартовый шаг
+                    document.querySelector('#editDetail .stepStartEdit').style.display = 'flex';
+                    document.querySelector('#editDetail .stepEducEdit').style.display = 'none';
+                    document.querySelector('#editDetail .stepQualEdit').style.display = 'none';
+                    document.querySelector('#editDetail .stepAwEdit').style.display = 'none';
+
+                    showPopup('edit-popup');
+                });
+            return;
+        }
     });
     //сохранение редакта
     document.getElementById('editBtn').addEventListener('click', async function () {
@@ -1868,6 +1982,41 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 customAlert(result.message);
             }
+        } else if (currentSection === 'doctorDetails') {
+            const doctorId = document.querySelector('#editDetail').dataset.doctorId;
+            if (!doctorId) {
+                customAlert('Ошибка: не выбран врач');
+                return;
+            }
+
+            const education = document.getElementById('educEdit').value.trim();
+            const qualification = document.getElementById('qualEdit').value.trim();
+            const awards = document.getElementById('awEdit').value.trim();
+
+            if (!education) {
+                customAlert('Укажите образование');
+                return;
+            }
+
+            const response = await fetch('../crud/updateDoctorDetail.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    doctor_id: doctorId,
+                    education: education,
+                    qualification: qualification,
+                    awards: awards
+                })
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                customAlert('Детали обновлены');
+                hidePopup('edit-popup');
+                loadSection(currentSection);
+            } else {
+                customAlert(result.message);
+            }
         }
     });
     //редакт для фотки
@@ -1968,6 +2117,9 @@ document.addEventListener('DOMContentLoaded', function () {
         } else if (deleteBtn.closest('.analysisCard')) {
             type = 'analysis';
             id = deleteBtn.closest('.analysisCard').dataset.id;
+        } else if (deleteBtn.closest('.doctorDetailCard')) {
+            type = 'doctorDetail';
+            id = deleteBtn.closest('.doctorDetailCard').dataset.id;
         }
 
         if (!type || !id) return;
@@ -2209,4 +2361,56 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         }
     });
+
+    // === ПЕРЕКЛЮЧЕНИЕ ШАГОВ В МОДАЛКАХ ДЕТАЛЕЙ ВРАЧА ===
+    // Добавление
+    const addDetailBlock = document.getElementById('addDetail');
+    if (addDetailBlock) {
+        document.getElementById('showEducAdd').addEventListener('click', function () {
+            document.querySelector('#addDetail .stepStartAdd').style.display = 'none';
+            document.querySelector('#addDetail .stepEducAdd').style.display = 'flex';
+        });
+        document.getElementById('showQualAdd').addEventListener('click', function () {
+            document.querySelector('#addDetail .stepStartAdd').style.display = 'none';
+            document.querySelector('#addDetail .stepQualAdd').style.display = 'flex';
+        });
+        document.getElementById('showAwAdd').addEventListener('click', function () {
+            document.querySelector('#addDetail .stepStartAdd').style.display = 'none';
+            document.querySelector('#addDetail .stepAwAdd').style.display = 'flex';
+        });
+        document.querySelectorAll('#addDetail .goBack').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelector('#addDetail .stepEducAdd').style.display = 'none';
+                document.querySelector('#addDetail .stepQualAdd').style.display = 'none';
+                document.querySelector('#addDetail .stepAwAdd').style.display = 'none';
+                document.querySelector('#addDetail .stepStartAdd').style.display = 'flex';
+            });
+        });
+    }
+
+    // Редактирование
+    const editDetailBlock = document.getElementById('editDetail');
+    if (editDetailBlock) {
+        document.getElementById('showEducEdit').addEventListener('click', function () {
+            document.querySelector('#editDetail .stepStartEdit').style.display = 'none';
+            document.querySelector('#editDetail .stepEducEdit').style.display = 'flex';
+        });
+        document.getElementById('showQualEdit').addEventListener('click', function () {
+            document.querySelector('#editDetail .stepStartEdit').style.display = 'none';
+            document.querySelector('#editDetail .stepQualEdit').style.display = 'flex';
+        });
+        document.getElementById('showAwEdit').addEventListener('click', function () {
+            document.querySelector('#editDetail .stepStartEdit').style.display = 'none';
+            document.querySelector('#editDetail .stepAwEdit').style.display = 'flex';
+        });
+        document.querySelectorAll('#editDetail .goBack').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelector('#editDetail .stepEducEdit').style.display = 'none';
+                document.querySelector('#editDetail .stepQualEdit').style.display = 'none';
+                document.querySelector('#editDetail .stepAwEdit').style.display = 'none';
+                document.querySelector('#editDetail .stepStartEdit').style.display = 'flex';
+            });
+        });
+    }
+
 });

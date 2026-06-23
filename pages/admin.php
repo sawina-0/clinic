@@ -42,7 +42,7 @@
                 <img src="../img/svg/logoGreen.svg" alt="логтип кедр">
             </a>
             <?if(isAdmin()): ?>
-            <nav class="desctopNav">
+            <nav class="desctopNav adminNav">
                 <ul>
                     <li><button class="tabBtn selected" data-section="users">пользователи</button></li>
                     <li><button class="tabBtn" data-section="services">услуги</button></li>
@@ -50,6 +50,7 @@
                     <li><button class="tabBtn" data-section="appointments">записи</button></li>
                     <li><button class="tabBtn" data-section="doctors">врачи</button></li>
                     <li><button class="tabBtn" data-section="doctorSchedule">график</button></li>
+                    <li><button class="tabBtn" data-section="doctorDetails">детали врача</button></li>
                 </ul>
             </nav>
             <?elseif(isDoctor()): ?>
@@ -81,6 +82,7 @@
                 <li><button onclick="toggleMenu()" class="tabBtn" data-section="appointments">записи</button></li>
                 <li><button onclick="toggleMenu()" class="tabBtn" data-section="doctors">врачи</button></li>
                 <li><button onclick="toggleMenu()" class="tabBtn" data-section="doctorSchedule">график</button></li>
+                <li><button onclick="toggleMenu()" class="tabBtn" data-section="doctorDetails">детали врача</button></li>
             </ul>
         </nav>
     </div>
@@ -533,6 +535,26 @@
                     <div id="currentFileInfoA"></div>
                 </div>
             </div>
+            <div id="editDetail" class="popupContent">
+                <p class="doctorFio"></p>
+                <div class="stepStartEdit">
+                    <button type="button" id="showEducEdit">Образование</button>
+                    <button type="button" id="showQualEdit">Квалификации</button>
+                    <button type="button" id="showAwEdit">Награды</button>
+                </div>
+                <div class="stepEducEdit">
+                    <button type="button" class="goBack">Вернуться</button>
+                    <textarea name="educEdit" id="educEdit"></textarea>
+                </div>
+                <div class="stepQualEdit">
+                    <button type="button" class="goBack">Вернуться</button>
+                    <textarea name="qualEdit" id="qualEdit"></textarea>
+                </div>
+                <div class="stepAwEdit">
+                    <button type="button" class="goBack">Вернуться</button>
+                    <textarea name="awEdit" id="awEdit"></textarea>
+                </div>
+            </div>
             <button id="editBtn" class="edit">сохранить</button>
         </div>
     </div>
@@ -862,6 +884,26 @@
                     <label for="analysisFileAdd">Файл:</label>
                     <input type="file" name="analysisFileAdd" id="analysisFileAdd" accept=".pdf, .jpg, .jpeg, .png">
                     <div id="currentFileInfo"></div>
+                </div>
+            </div>
+            <div id="addDetail" class="popupContent">
+                <p class="doctorFio"></p>
+                <div class="stepStartAdd">
+                    <button type="button" id="showEducAdd">Образование</button>
+                    <button type="button" id="showQualAdd">Квалификации</button>
+                    <button type="button" id="showAwAdd">Награды</button>
+                </div>
+                <div class="stepEducAdd">
+                    <button type="button" class="goBack">Вернуться</button>
+                    <textarea name="educAdd" id="educAdd"></textarea>
+                </div>
+                <div class="stepQualAdd">
+                    <button type="button" class="goBack">Вернуться</button>
+                    <textarea name="qualAdd" id="qualAdd"></textarea>
+                </div>
+                <div class="stepAwAdd">
+                    <button type="button" class="goBack">Вернуться</button>
+                    <textarea name="awAdd" id="awAdd"></textarea>
                 </div>
             </div>
             <button id="addBtn" class="add">добавить</button>

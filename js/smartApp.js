@@ -53,10 +53,12 @@
 
                     html += `
                         <div class="doctorCard" data-doctor-id="${doctor.doctor_id}">
-                            <img src="${photoPath}" alt="${fullName}">
-                            <p>${fullName}</p>
-                            <p>${data.specialist_name}</p>
-                            <p>Стаж: ${doctor.exp} лет</p>
+                            <a href="./doctor.php?id=${doctor.doctor_id}" class="doctor-link">
+                                <img src="${photoPath}" alt="${fullName}">
+                                <p>${fullName}</p>
+                                <p>${data.specialist_name}</p>
+                                <p>Стаж: ${doctor.exp} лет</p>
+                            </a>
                             <button class="commonBtn" data-type="doctor" 
                                     data-doctor-id="${doctor.doctor_id}"
                                     data-doctor-name="${fullName}"

@@ -53,21 +53,23 @@ if (!empty($doctors)) {
         $photoPath = $row['photo']
             ? '../img/avatars/' . $row['photo']
             : '../img/avatars/none.svg';
-        ?>
+?>
         <div class="doctorCard">
-            <img src="<?= htmlspecialchars($photoPath) ?>" alt="<?= htmlspecialchars($row['full_name']) ?>">
-            <div class="txt">
-                <h3><?= htmlspecialchars($row['full_name']) ?></h3>
-                <p><?= htmlspecialchars($row['specialist_name']) ?></p>
-                <p>Стаж: <?= (int)$row['exp'] ?> лет</p>
-            </div>
-            <button type="button" 
-                    class="commonBtn" 
-                    data-doctor-id="<?= $row['doctor_id'] ?>"
-                    data-doctor-name="<?= htmlspecialchars($row['full_name']) ?>"
-                    data-doctor-photo="<?= htmlspecialchars($row['photo']) ?>"
-                    data-type="doctor"
-                    data-direction-id="<?= $row['direction_id'] ?? '' ?>">
+            <a href="./doctor.php?id=<?= $row['doctor_id'] ?>" class="doctor-link">
+                <img src="<?= htmlspecialchars($photoPath) ?>" alt="<?= htmlspecialchars($row['full_name']) ?>">
+                <div class="txt">
+                    <h3><?= htmlspecialchars($row['full_name']) ?></h3>
+                    <p><?= htmlspecialchars($row['specialist_name']) ?></p>
+                    <p>Стаж: <?= (int)$row['exp'] ?> лет</p>
+                </div>
+            </a>
+            <button type="button"
+                class="commonBtn"
+                data-doctor-id="<?= $row['doctor_id'] ?>"
+                data-doctor-name="<?= htmlspecialchars($row['full_name']) ?>"
+                data-doctor-photo="<?= htmlspecialchars($row['photo']) ?>"
+                data-type="doctor"
+                data-direction-id="<?= $row['direction_id'] ?? '' ?>">
                 записаться
             </button>
         </div>

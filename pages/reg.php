@@ -27,7 +27,10 @@
         elseif(strlen($pass) < 6){
             $response['message'] = 'Пароль должен быть минимум 6 символов';
         }
-        elseif(!preg_match('/[А-ЯA-Z]/', $pass)){
+        elseif (!preg_match('/^[A-Za-z0-9]+$/', $pass)) {
+            $response['message'] = 'Пароль должен содержать только латинские буквы и цифры';
+        }
+        elseif(!preg_match('/[A-Z]/', $pass)){
             $response['message'] = 'Пароль должен содержать хотя бы одну заглавную букву';
         }
         elseif(!preg_match('/[0-9]/', $pass)){
