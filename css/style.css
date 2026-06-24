@@ -1102,6 +1102,7 @@ ul {
     border-radius: 15px;
     cursor: pointer;
     transition: .3s;
+    border: none;
 }
 
 .commonBtn:hover {

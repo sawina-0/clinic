@@ -295,4 +295,49 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('stepDate').style.display = 'flex';
         document.getElementById('stepDate').style.visibility = 'visible';
     });
+
+    // Кнопка "Записаться" на странице врача
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.commonBtn[data-type="doctor"]');
+        if (!btn) return;
+
+        if (!window.isLogged) {
+            window.location.href = '../pages/auth.php';
+            return;
+        }
+        if (!window.isPatient) {
+            alert('Работники клиники не могут записываться на приём');
+            return;
+        }
+
+        selectedDoctor.id = btn.dataset.doctorId;
+        selectedDoctor.name = btn.dataset.doctorName;
+        selectedDoctor.photo = btn.dataset.doctorPhoto;
+
+        // Заполняем модалку
+        const stepService = document.getElementById('stepService');
+        const dataBlock = stepService.querySelector('.data');
+        let photoHtml = '<img src="../img/avatars/none.svg" alt="">';
+        if (selectedDoctor.photo && selectedDoctor.photo !== '') {
+            photoHtml = '<img src="../img/avatars/' + selectedDoctor.photo + '" alt="' + selectedDoctor.name + '">';
+        }
+        dataBlock.innerHTML = photoHtml + '<p>' + selectedDoctor.name + '</p>';
+
+        // Загружаем услуги врача
+        const optionsContainer = stepService.querySelector('.options-container');
+        optionsContainer.innerHTML = 'Загрузка...';
+        fetch('../func/getDoctorServices.php?doctor_id=' + selectedDoctor.id)
+            .then(response => response.text())
+            .then(data => {
+                optionsContainer.innerHTML = data;
+                stepService.querySelector('.custom-select-trigger span').textContent = 'Выберите услугу';
+            });
+
+        // Загружаем расписание
+        fetch('../func/getDoctorSchedule.php?doctor_id=' + selectedDoctor.id)
+            .then(response => response.json())
+            .then(data => doctorSchedule = data);
+
+        showPopup('app-popup');
+    });
 });
